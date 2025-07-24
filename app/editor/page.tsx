@@ -2,7 +2,9 @@
 import ColorElement from "@/components/editor/color";
 import ApparelPreview from "@/components/editor/preview";
 import { colorId } from "@/components/editor/color";
+import { patternId } from "@/components/editor/pattern";
 import { useState } from "react";
+import PatternElement from "@/components/editor/pattern";
 const apparelId = 0;
 
 type cell = {
@@ -10,15 +12,18 @@ type cell = {
   selectedColorId: number;
 };
 
-type patternId = number;
 type patternFile = string;
 type patternDictionary = { [key: patternId]: patternFile };
 type colorTable = colorId[];
+type patternTable = patternId[];
 type hexColor = string;
 type colorDictionary = { [key: colorId]: hexColor };
+
 export const allPatterns: patternDictionary = {
   // ID : FileName
-  198474: "Batik.png",
+  0: "Batik1.png",
+  1: "Batik2.png",
+  2: "Batik3.png",
 };
 export const allColors: colorDictionary = {
   // ID : hex
@@ -28,6 +33,7 @@ export const allColors: colorDictionary = {
 };
 
 const apparelColors: colorTable = [0, 1, 2];
+const userPatterns: patternTable = [0, 1, 2];
 
 export default function Editor() {
   const [selectedCell, setSelectedCell] = useState<cell>({
@@ -40,24 +46,46 @@ export default function Editor() {
     setSelectedCell((prev) => {
       if (!prev) return prev;
       else {
-        console.log(colorSelect);
         return { ...prev, selectedColorId: colorSelect };
       }
     });
   }
 
-  function selectPattern() {}
+  function selectPattern(patternSelect: patternId) {
+    if (!selectedCell) return;
+    setSelectedCell((prev) => {
+      if (!prev) return prev;
+      else {
+        console.log(patternSelect);
+        return { ...prev, selectedPatternId: patternSelect };
+      }
+    });
+  }
   return (
     <div className="w-screen h-screen flex flex-row justify-center items-center py-10 gap-10">
       <div
         id="apparel-editor"
-        className="w-[70%] items-center justify-center flex flex-row bg-black h-full"
+        className="relative w-[70%] items-center justify-center flex flex-row bg-black h-full"
       >
-        <div id="pattern-palette"></div>
+        <div
+          id="pattern-palette"
+          className=" absolute top-10 flex flex-row gap-5"
+        >
+          {userPatterns.map((pattern) => (
+            <PatternElement
+              key={pattern}
+              selectPattern={pattern}
+              onPatternSelect={selectPattern}
+            ></PatternElement>
+          ))}
+        </div>
         <div id="apparel-preview">
           <ApparelPreview></ApparelPreview>
         </div>
-        <div id="color-palette" className="flex flex-row gap-5">
+        <div
+          id="color-palette"
+          className=" absolute bottom-10 flex flex-row gap-5"
+        >
           {apparelColors.map((color) => (
             <ColorElement
               onColorSelect={selectColor}
