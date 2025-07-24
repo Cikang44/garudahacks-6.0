@@ -80,54 +80,6 @@ interface ApparelCardProps {
   item: Apparel;
 }
 
-const CountdownTimer: React.FC<CountdownTimerProps> = ({ targetDate }) => {
-  const calculateTimeLeft = useCallback(() => {
-    const difference = +new Date(targetDate) - +new Date();
-    let timeLeft: { [key: string]: number } = {};
-
-    if (difference > 0) {
-      timeLeft = {
-        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-        minutes: Math.floor((difference / 1000 / 60) % 60),
-        seconds: Math.floor((difference / 1000) % 60),
-      };
-    }
-    return timeLeft;
-  }, [targetDate]);
-
-  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setTimeLeft(calculateTimeLeft());
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  });
-
-  const timerComponents = Object.entries(timeLeft).map(([interval, value]) => (
-    <div key={interval} className="flex flex-col items-center">
-      <span className="text-2xl md:text-3xl font-bold text-accent-foreground">
-        {String(value).padStart(2, "0")}
-      </span>
-      <span className="text-xs uppercase text-accent-foreground/50">
-        {interval}
-      </span>
-    </div>
-  ));
-
-  return (
-    <div className="flex justify-center space-x-4 my-4">
-      {timerComponents.length ? (
-        timerComponents
-      ) : (
-        <span className="text-xl font-bold">Time's up!</span>
-      )}
-    </div>
-  );
-};
-
 const ApparelCard: React.FC<ApparelCardProps> = ({ item }) => {
   const router = useRouter();
   const handleButtonClick = useCallback(
@@ -161,15 +113,7 @@ const ApparelCard: React.FC<ApparelCardProps> = ({ item }) => {
           }}
         />
       </div>
-      <CardContent className="p-4 text-center">
-        <CountdownTimer targetDate={item.countdownTo} />
-        <Button
-          onClick={() => handleButtonClick(item.buttonState)}
-          className="capitalize mt-2 w-full"
-        >
-          {item.buttonState}
-        </Button>
-      </CardContent>
+      <CardContent className="p-4 text-center"></CardContent>
     </Card>
   );
 };
@@ -220,7 +164,8 @@ export default function ApparelShowcasePage() {
   }, [api, handleScroll]);
 
   return (
-    <div className="w-full h-screen bg-background flex flex-col items-center justify-center p-4 overflow-hidden">
+    <div className="w-full text-accent-foreground h-screen bg-background flex flex-col items-center justify-center p-4 overflow-hidden">
+      <div>test</div>
       <div className="w-full max-w-7xl mx-auto">
         <Carousel
           setApi={setApi}
