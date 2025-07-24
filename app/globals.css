@@ -1,7 +1,31 @@
+@import url("https://fonts.googleapis.com/css2?family=Poly:ital@0;1&family=Stoke:wght@300;400&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
+
+.stoke-light {
+  font-family: "Stoke", serif;
+  font-weight: 300;
+  font-style: normal;
+}
+
+.stoke-regular {
+  font-family: "Stoke", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+.poly-regular {
+  font-family: "Poly", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.poly-regular-italic {
+  font-family: "Poly", serif;
+  font-weight: 400;
+  font-style: italic;
+}
 
 @theme inline {
   --color-background: var(--background);
