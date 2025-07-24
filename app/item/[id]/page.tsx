@@ -9,7 +9,7 @@ export default function ItemPage({
   const { id } = use(params);
 
   return (
-    <div>
+    <div className="text-accent-foreground">
       <p>{id}</p>
     </div>
   );

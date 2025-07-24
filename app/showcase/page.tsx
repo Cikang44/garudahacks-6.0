@@ -108,10 +108,12 @@ const CountdownTimer: React.FC<CountdownTimerProps> = ({ targetDate }) => {
 
   const timerComponents = Object.entries(timeLeft).map(([interval, value]) => (
     <div key={interval} className="flex flex-col items-center">
-      <span className="text-2xl md:text-3xl font-bold text-gray-900">
+      <span className="text-2xl md:text-3xl font-bold text-accent-foreground">
         {String(value).padStart(2, "0")}
       </span>
-      <span className="text-xs uppercase text-gray-500">{interval}</span>
+      <span className="text-xs uppercase text-accent-foreground/50">
+        {interval}
+      </span>
     </div>
   ));
 
@@ -140,7 +142,7 @@ const ApparelCard: React.FC<ApparelCardProps> = ({ item }) => {
 
   return (
     <Card className="w-full h-full border-none overflow-hidden bg-transparent shadow-none">
-      <div className="relative p-4 md:p-6">
+      <div className="relative ">
         <Badge
           variant={item.status === "Locked" ? "destructive" : "default"}
           className="absolute top-4 left-4 z-10"
@@ -160,9 +162,6 @@ const ApparelCard: React.FC<ApparelCardProps> = ({ item }) => {
         />
       </div>
       <CardContent className="p-4 text-center">
-        <h3 className="text-lg md:text-xl font-semibold text-gray-900">
-          {item.name}
-        </h3>
         <CountdownTimer targetDate={item.countdownTo} />
         <Button
           onClick={() => handleButtonClick(item.buttonState)}
@@ -221,7 +220,7 @@ export default function ApparelShowcasePage() {
   }, [api, handleScroll]);
 
   return (
-    <div className="w-full h-screen bg-gray-50 flex flex-col items-center justify-center p-4 overflow-hidden">
+    <div className="w-full h-screen bg-background flex flex-col items-center justify-center p-4 overflow-hidden">
       <div className="w-full max-w-7xl mx-auto">
         <Carousel
           setApi={setApi}
