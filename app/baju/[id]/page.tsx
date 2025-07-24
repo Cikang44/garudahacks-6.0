@@ -4,16 +4,41 @@
 import React, { useState } from 'react';
 import MatrixDisplay from '../../../lib/matrixRenderer';
 
-const GRID_WIDTH = 10;
-const GRID_HEIGHT = 10;
+const GRID_WIDTH = 19;
+const GRID_HEIGHT = 13;
+const FORBIDDEN_CELL: [number, number] = [-1, -1];
+const DEFAULT_CELL: [number, number] = [0, 0];
+
+
 
 /**
  * Creates an initial grid (2D array) filled with a default value.
- * @returns A 2D array of a tuple of numbers.
+ * @returns A 2D array of a tuple [patternID, colorID] of numbers.
  */
 const createInitialGrid = (): [number, number][][] => {
-  const defaultCell: [number, number] = [0, 0]; // e.g., pattern 0, colorId 0 (White)
-  return Array(GRID_HEIGHT).fill(null).map(() => Array(GRID_WIDTH).fill(defaultCell));
+  const grid: [number,number][][] = []; 
+  for (let y = 0; y < GRID_HEIGHT; y++) {
+    const row: [number,number][] = []; 
+  
+    for (let x = 0; x < GRID_WIDTH; x++) {
+      /* 
+      [0,4]->[3,12] inaccessible 
+      [8,0]->[10,2] inaccessible
+      [15,4]->[18,12] inaccessible
+      */
+      if((x<4 && y>3 && y<13) || (x>7 && x<11 && y>-1 && y<3) || (x>14 && x<19 && y>3 && y<13)){
+        row.push(FORBIDDEN_CELL)
+      }
+      else{
+        row.push(DEFAULT_CELL);
+      }
+
+    }
+
+    grid.push(row); 
+  }
+  return grid;
+
 };
 
 export default function Matrix() {
@@ -32,10 +57,10 @@ export default function Matrix() {
 
     const row = parseInt(rowInput);
     const col = parseInt(colInput);
-    const patternId = parseInt(patternInput);
-    const color = parseInt(colorInput);
+    const patternID = parseInt(patternInput);
+    const colorID = parseInt(colorInput);
 
-    if (isNaN(row) || isNaN(col) || isNaN(patternId)) {
+    if (isNaN(row) || isNaN(col) || isNaN(patternID)) {
       setMessage('Please enter valid numbers for all fields.');
       return;
     }
@@ -43,16 +68,22 @@ export default function Matrix() {
       setMessage(`Coordinates out of bounds. Row must be 0-${GRID_HEIGHT - 1}, Col must be 0-${GRID_WIDTH - 1}.`);
       return;
     }
+    
+    if (grid[row][col] == FORBIDDEN_CELL){
+      setMessage('You cannot put a pattern there.');
+      return;
+    }
 
-    const newGrid = [];
+    const newGrid: [number,number][][] = []; 
     for (const row of grid) {
         const newRow = [...row];
         newGrid.push(newRow);
     }
     
-    newGrid[row][col] = [patternId,color];
+    newGrid[row][col] = [patternID,colorID];
     setGrid(newGrid);
-    setMessage(`Successfully updated tile at (${row}, ${col}) to pattern ${patternId} with the color ${colorInput}.`);
+    setMessage('');
+    // setMessage(`Successfully updated tile at (${row}, ${col}) to pattern ${patternID} with the color ${colorID}.`);
   };
 
 
