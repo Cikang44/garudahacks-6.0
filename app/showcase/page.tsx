@@ -86,7 +86,7 @@ const ApparelCard: React.FC<ApparelCardProps> = ({ item }) => {
     (type: ButtonState) => {
       if (!router) return;
       router.push(
-        type === "contribute" ? `/editor/${item.id}` : `/item/${item.id}`
+        type === "contribute" ? `/editor/${item.id}` : `/product/${item.id}`
       );
     },
     [router]
