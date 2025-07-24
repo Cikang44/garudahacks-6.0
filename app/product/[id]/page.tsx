@@ -47,7 +47,7 @@ export default function ItemPage({
           ></Image>
           <div className="h-4/5 bg-secondary w-full -z-10 absolute rounded-[10px]"></div>
         </div>
-        <div className="bg-secondary h-fit flex flex-col items-center rounded-[10px] p-5">
+        <div className="bg-secondary h-fit flex flex-col items-center rounded-[10px] p-8">
           <div className="stoke-regular text-[48px] mt-3">{product.name}</div>
           <div className=" opacity-70 text-[28px] mb-5">
             Created on {friendlyDate}
@@ -55,7 +55,7 @@ export default function ItemPage({
           <div className="opacity-30 text-[20px] underline cursor-pointer">
             {product.contribution.length} people contributed to this apparel
           </div>
-          <div className="flex flex-col gap-2 mt-2">
+          <div className="flex flex-col gap-5 mt-5">
             <Button
               variant={"outline"}
               className="text-[28px] w-[385px] p-10 rounded-[8px]"
