@@ -27,10 +27,12 @@ export const patternsTable = pgTable('patterns', {
     name: varchar('name', { length: 255 }).notNull(),
     description: text('description').notNull(),
     daerahId: uuid('daerah_id').notNull(),
+    imageUrl: varchar('image_url', { length: 511 }).notNull(),
 });
 
 export const apparelTable = pgTable('apparel', {
     id: uuid('id').primaryKey().defaultRandom(),
+    name: varchar('name', { length: 255 }).notNull(),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
     closedAt: timestamp('closed_at').notNull().defaultNow(),
@@ -48,11 +50,12 @@ export const shopItemsTable = pgTable('shop_items', {
     id: uuid('id').primaryKey().defaultRandom(),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
+    apparelId: uuid('apparel_id').notNull(),
     isPurchasable: boolean('is_purchasable').notNull().default(true),
     name: varchar('name', { length: 255 }).notNull(),
     description: text('description').notNull(),
     price: integer('price').notNull(),
-    objectKey: varchar('object_key', { length: 255 }).notNull(),
+    imageUrl: varchar('image_url', { length: 511 }).notNull(),
     stock: integer('stock').notNull().default(0),
 });
 
@@ -86,6 +89,11 @@ export const userApparelRelations = relations(userApparelTable, ({ one }) => ({
     }),
 }));
 
+export const apparelRelations = relations(apparelTable, ({ many }) => ({
+    shopItems: many(shopItemsTable),
+    userApparel: many(userApparelTable),
+}));
+
 export const daerahRelations = relations(daerahTable, ({ one, many }) => ({
     users: one(usersTable, {
         fields: [daerahTable.id],
@@ -101,8 +109,12 @@ export const patternsRelations = relations(patternsTable, ({ one }) => ({
     }),
 }));
 
-export const shopItemsRelations = relations(shopItemsTable, ({ many }) => ({
+export const shopItemsRelations = relations(shopItemsTable, ({ one, many }) => ({
     transactions: many(transactionsTable),
+    apparel: one(apparelTable, {
+        fields: [shopItemsTable.apparelId],
+        references: [apparelTable.id],
+    }),
 }));
 
 export const transactionsRelations = relations(transactionsTable, ({ one }) => ({
