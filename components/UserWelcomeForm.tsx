@@ -5,13 +5,26 @@ import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/f
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
 import { useAuth } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
+import useSWR from "swr";
+import { TRegion } from "@/app/api/region/schema";
+
+const fetcher = (url: string) => fetch(url).then(res => res.json());
 
 export default function UserWelcomeForm() {
     const form = useForm();
     const { userId } = useAuth();
+    const router = useRouter();
+    const { data, error, isLoading } = useSWR("/api/region", fetcher);
+    const regions: TRegion[] = data || [];
 
     if (!userId) {
         return <div className="text-center text-red-500">You must be logged in to complete this form.</div>;
+    } else if (error) {
+        return <div className="text-center text-red-500">Failed to load regions.</div>;
+    } else if (isLoading) {
+        return <div className="text-center">Loading...</div>;
     }
 
     const onSubmit = async (data: any) => {
@@ -27,7 +40,7 @@ export default function UserWelcomeForm() {
             if (!response.ok) {
                 throw new Error("Failed to submit form");
             } else {
-                window.location.href = "/";
+                router.push("/");
             }
         } catch (error) {
             console.error("Error submitting form:", error);
@@ -35,13 +48,13 @@ export default function UserWelcomeForm() {
     };
 
     return (
-        <div className="max-w-md mx-auto p-4 bg-white rounded shadow">
+        <div className="min-w-md p-4 bg-white rounded shadow">
             <h1 className="text-2xl font-bold text-center mb-4">Welcome!</h1>
             <FormProvider {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                     <FormField
                         control={form.control}
-                        name="region"
+                        name="daerahId"
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel asChild>
@@ -51,20 +64,19 @@ export default function UserWelcomeForm() {
                                     <DropdownMenu>
                                         <DropdownMenuTrigger>
                                             <Button variant="outline" className="w-full">
-                                                {field.value || "Select..."}
+                                                {regions.find(region => region.id === field.value)?.name || "Select..."}
                                             </Button>
                                         </DropdownMenuTrigger>
                                         <DropdownMenuContent>
                                             <DropdownMenuLabel>Select...</DropdownMenuLabel>
-                                            <DropdownMenuItem onSelect={() => field.onChange(0)}>
-                                                Jawa Barat
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem onSelect={() => field.onChange(1)}>
-                                                Jawa Tengah
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem onSelect={() => field.onChange(2)}>
-                                                Jawa Timur
-                                            </DropdownMenuItem>
+                                            {regions.map((region) => (
+                                                <DropdownMenuItem
+                                                    key={region.id}
+                                                    onSelect={() => field.onChange(region.id)}
+                                                >
+                                                    {region.name}
+                                                </DropdownMenuItem>
+                                            ))}
                                         </DropdownMenuContent>
                                     </DropdownMenu>
                                 </FormControl>

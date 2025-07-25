@@ -23,7 +23,8 @@ export async function PUT(req: NextRequest) {
         await db.update(usersTable)
             .set({
                 ...(data.name ? { name: data.name } : {}),
-                ...(data.region ? { daerahId: data.region } : {}),
+                ...(data.daerahId ? { daerahId: data.daerahId } : {}),
+                updatedAt: new Date(),
             })
             .where(eq(usersTable.clerkId, data.clerkId))
             .execute();
@@ -55,7 +56,7 @@ export async function PUT(req: NextRequest) {
             id: uuidv4(),
             clerkId: data.clerkId,
             name: displayName,
-            daerahId: data.region || 1,
+            daerahId: data.daerahId ? String(data.daerahId) : "0000-0000-0000-0000",
         }).execute();
     }
 

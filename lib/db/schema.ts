@@ -17,7 +17,7 @@ export const daerahTable = pgTable('daerah', {
     id: uuid('id').primaryKey(),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
-    name: varchar('name', { length: 255 }).notNull(),
+    name: varchar('name', { length: 255 }).notNull().unique(),
 });
 
 export const patternsTable = pgTable('patterns', {
