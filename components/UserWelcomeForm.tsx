@@ -39,7 +39,7 @@ export default function UserWelcomeForm() {
     };
 
     return (
-        <div className="min-w-md p-4 bg-white rounded shadow">
+        <div className="min-w-md p-4 bg-white text-black rounded shadow">
             <h1 className="text-2xl font-bold text-center mb-4">Welcome!</h1>
             <FormProvider {...form}>
                 <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
