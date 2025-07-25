@@ -89,7 +89,7 @@ export default function Matrix() {
       <div className="max-w-4xl mx-auto">
 
         <div className="flex flex-col md:flex-row gap-8">
-          {/* --- Control Panel ---
+          {/* --- Control Panel --- */}
           <aside className="md:w-1/3 bg-white p-6 rounded-xl shadow-md">
             <h2 className="text-2xl font-semibold mb-4 text-gray-700">Update a Tile</h2>
             <form onSubmit={handleUpdateTile} className="space-y-4">
@@ -143,7 +143,7 @@ export default function Matrix() {
             {message && (
               <p className="mt-4 text-sm text-center text-gray-600 bg-gray-50 p-3 rounded-lg">{message}</p>
             )}
-          </aside> */}
+          </aside>
 
           <MatrixDisplay grid={grid} gridWidth={GRID_WIDTH} />
 
