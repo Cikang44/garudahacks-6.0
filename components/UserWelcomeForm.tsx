@@ -2,29 +2,20 @@
 
 import { FormProvider, useForm } from "react-hook-form";
 import { FormControl, FormField, FormItem, FormLabel, FormMessage } from "./ui/form";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "./ui/dropdown-menu";
 import { Button } from "./ui/button";
 import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 import useSWR from "swr";
 import { TRegion } from "@/app/api/region/schema";
-
-const fetcher = (url: string) => fetch(url).then(res => res.json());
+import { RegionDropdown } from "./RegionDropdown";
 
 export default function UserWelcomeForm() {
     const form = useForm();
     const { userId } = useAuth();
     const router = useRouter();
-    const { data, error, isLoading } = useSWR("/api/region", fetcher);
-    const regions: TRegion[] = data || [];
 
     if (!userId) {
         return <div className="text-center text-red-500">You must be logged in to complete this form.</div>;
-    } else if (error) {
-        return <div className="text-center text-red-500">Failed to load regions.</div>;
-    } else if (isLoading) {
-        return <div className="text-center">Loading...</div>;
     }
 
     const onSubmit = async (data: any) => {
@@ -61,24 +52,7 @@ export default function UserWelcomeForm() {
                                     <h1 className="text-lg text-center font-semibold">Select your region</h1>
                                 </FormLabel>
                                 <FormControl>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger>
-                                            <Button variant="outline" className="w-full">
-                                                {regions.find(region => region.id === field.value)?.name || "Select..."}
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent>
-                                            <DropdownMenuLabel>Select...</DropdownMenuLabel>
-                                            {regions.map((region) => (
-                                                <DropdownMenuItem
-                                                    key={region.id}
-                                                    onSelect={() => field.onChange(region.id)}
-                                                >
-                                                    {region.name}
-                                                </DropdownMenuItem>
-                                            ))}
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
+                                    <RegionDropdown field={field} />
                                 </FormControl>
                                 <FormMessage />
                                 <div className="flex justify-end">

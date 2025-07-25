@@ -4,7 +4,30 @@ import { db } from "@/lib/db";
 import { usersTable } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { v4 as uuidv4 } from "uuid";
-import { currentUser } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
+
+// export async function GET(req: NextRequest) {
+//     const { userId: clerkId } = await auth();
+//     if (!clerkId) {
+//         return new Response(JSON.stringify({ error: "User not authenticated" }), {
+//             status: 401,
+//             headers: { "Content-Type": "application/json" },
+//         });
+//     }
+//     const user = await db.query.usersTable.findFirst({
+//         where: eq(usersTable.clerkId, clerkId),
+//     });
+//     if (!user) {
+//         return new Response(JSON.stringify({ error: "User not found" }), {
+//             status: 404,
+//             headers: { "Content-Type": "application/json" },
+//         });
+//     }
+//     return new Response(JSON.stringify(user), {
+//         status: 200,
+//         headers: { "Content-Type": "application/json" },
+//     });
+// }
 
 export async function PUT(req: NextRequest) {
     const data: TAuthPutBody = await req.json();
