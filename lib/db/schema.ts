@@ -86,15 +86,12 @@ export const userApparelRelations = relations(userApparelTable, ({ one }) => ({
     }),
 }));
 
-export const daerahRelations = relations(daerahTable, ({ one }) => ({
+export const daerahRelations = relations(daerahTable, ({ one, many }) => ({
     users: one(usersTable, {
         fields: [daerahTable.id],
         references: [usersTable.daerahId],
     }),
-    patterns: one(patternsTable, {
-        fields: [daerahTable.id],
-        references: [patternsTable.daerahId],
-    }),
+    patterns: many(patternsTable),
 }));
 
 export const patternsRelations = relations(patternsTable, ({ one }) => ({
