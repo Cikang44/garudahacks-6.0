@@ -6,7 +6,7 @@ import { MapPin, Mail, Phone } from "lucide-react"
 import { RegionDropdown } from "@/components/RegionDropdown"
 import { useCallback, useState } from "react"
 import { Button } from "./ui/button"
-import { UserProfile } from "@clerk/nextjs"
+import { SignOutButton, UserProfile } from "@clerk/nextjs"
 
 export default function UserProfileForm({ clerkId, imageUrl, fullName, firstName, lastName, email, appUser }: { clerkId: string; imageUrl: string; fullName: string; firstName: string; lastName: string; email: string; appUser: any }) {
 
@@ -71,6 +71,13 @@ export default function UserProfileForm({ clerkId, imageUrl, fullName, firstName
                             </div>˝
                         </div>
                     )}
+                </div>
+                <div className="pt-4 border-t">
+                   <SignOutButton >
+                        <Button variant="destructive" className="w-full">
+                            Sign Out
+                        </Button>
+                   </SignOutButton>
                 </div>
             </CardContent>
         </Card>
