@@ -1,6 +1,5 @@
 "use client";
 
-
 import React, { useState } from 'react';
 import MatrixDisplay from '../../../lib/matrixRenderer';
 
@@ -9,33 +8,31 @@ const GRID_HEIGHT = 13;
 const FORBIDDEN_CELL: [number, number] = [-1, -1];
 const DEFAULT_CELL: [number, number] = [0, 0];
 
-
-
 /**
  * Creates an initial grid (2D array) filled with a default value.
  * @returns A 2D array of a tuple [patternID, colorID] of numbers.
  */
 const createInitialGrid = (): [number, number][][] => {
-  const grid: [number,number][][] = []; 
+  const grid: [number, number][][] = [];
   for (let y = 0; y < GRID_HEIGHT; y++) {
-    const row: [number,number][] = []; 
-  
+    const row: [number, number][] = [];
+
     for (let x = 0; x < GRID_WIDTH; x++) {
       /* 
       [0,4]->[3,12] inaccessible 
       [8,0]->[10,2] inaccessible
       [15,4]->[18,12] inaccessible
       */
-      if((x<4 && y>3 && y<13) || (x>7 && x<11 && y>-1 && y<3) || (x>14 && x<19 && y>3 && y<13)){
-        row.push(FORBIDDEN_CELL)
+      if ((x < 4 && y > 3 && y < 13) || (x > 7 && x < 11 && y > -1 && y < 3) || (x > 14 && x < 19 && y > 3 && y < 13)) {
+        row.push(FORBIDDEN_CELL);
       }
-      else{
+      else {
         row.push(DEFAULT_CELL);
       }
 
     }
 
-    grid.push(row); 
+    grid.push(row);
   }
   return grid;
 
@@ -43,7 +40,7 @@ const createInitialGrid = (): [number, number][][] => {
 
 export default function Matrix() {
 
-  const [grid, setGrid] = useState<[number,number][][]>(createInitialGrid);
+  const [grid, setGrid] = useState<[number, number][][]>(createInitialGrid);
 
   const [rowInput, setRowInput] = useState<string>('0');
   const [colInput, setColInput] = useState<string>('0');
@@ -68,19 +65,19 @@ export default function Matrix() {
       setMessage(`Coordinates out of bounds. Row must be 0-${GRID_HEIGHT - 1}, Col must be 0-${GRID_WIDTH - 1}.`);
       return;
     }
-    
-    if (grid[row][col] == FORBIDDEN_CELL){
+
+    if (grid[row][col] == FORBIDDEN_CELL) {
       setMessage('You cannot put a pattern there.');
       return;
     }
 
-    const newGrid: [number,number][][] = []; 
+    const newGrid: [number, number][][] = [];
     for (const row of grid) {
-        const newRow = [...row];
-        newGrid.push(newRow);
+      const newRow = [...row];
+      newGrid.push(newRow);
     }
-    
-    newGrid[row][col] = [patternID,colorID];
+
+    newGrid[row][col] = [patternID, colorID];
     setGrid(newGrid);
     setMessage('');
     // setMessage(`Successfully updated tile at (${row}, ${col}) to pattern ${patternID} with the color ${colorID}.`);
@@ -92,7 +89,7 @@ export default function Matrix() {
       <div className="max-w-4xl mx-auto">
 
         <div className="flex flex-col md:flex-row gap-8">
-          {/* --- Control Panel --- */}
+          {/* --- Control Panel ---
           <aside className="md:w-1/3 bg-white p-6 rounded-xl shadow-md">
             <h2 className="text-2xl font-semibold mb-4 text-gray-700">Update a Tile</h2>
             <form onSubmit={handleUpdateTile} className="space-y-4">
@@ -146,7 +143,7 @@ export default function Matrix() {
             {message && (
               <p className="mt-4 text-sm text-center text-gray-600 bg-gray-50 p-3 rounded-lg">{message}</p>
             )}
-          </aside>
+          </aside> */}
 
           <MatrixDisplay grid={grid} gridWidth={GRID_WIDTH} />
 

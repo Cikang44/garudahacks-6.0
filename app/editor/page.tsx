@@ -84,7 +84,7 @@ export default function Editor() {
         </div>
         <div
           id="color-palette"
-          className=" absolute bottom-10 flex flex-row gap-5"
+          className="absolute bottom-10 flex flex-row gap-5"
         >
           {apparelColors.map((color) => (
             <ColorElement
