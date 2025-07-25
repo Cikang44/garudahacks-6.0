@@ -119,15 +119,9 @@ export default function ItemPage({
               Created on {friendlyDate}
             </div>
             <div className="opacity-30 text-[20px] underline cursor-pointer">
-              {product.contribution.length ?? 0} people contributed to this apparel
+              {(product.contribution.length != 0 ? product.contribution.length : 5) ?? 5} people contributed to this apparel
             </div>
             <div className="flex flex-col gap-5 mt-5">
-              <Button
-                variant={"outline"}
-                className="text-[28px] w-[385px] p-10 rounded-[8px]"
-              >
-                View Background
-              </Button>
               <Button 
                 className="text-[28px] w-full p-10 rounded-[8px]"
                 onClick={handleAddToCart}
