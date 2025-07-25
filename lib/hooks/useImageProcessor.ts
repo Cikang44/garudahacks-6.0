@@ -34,7 +34,7 @@ export const useImageProcessor = () => {
               p.image(img, 0, 0);
               p.loadPixels();
 
-              // --- MODIFIED LOGIC STARTS HERE ---
+              // --- REVERTED LOGIC STARTS HERE ---
 
               const targetR = p.red(targetColor);
               const targetG = p.green(targetColor);
@@ -46,21 +46,20 @@ export const useImageProcessor = () => {
                 const b = p.pixels[i + 2];
 
                 if (r === g && g === b) {
-                  // The original grayscale value (0-255)
                   const grayValue = r;
 
-                  // 1. Calculate the blend amount (alpha).
-                  // Invert the value: black (0) becomes 1.0, white (255) becomes 0.0.
+                  // 1. Calculate blend amount based on darkness.
+                  // Black (0) = 1.0 alpha, White (255) = 0.0 alpha.
                   const colorAlpha = (255 - grayValue) / 255.0;
 
-                  // 2. Use lerp() to blend between the original gray and the target color.
+                  // 2. Blend from the original gray value to the target color.
                   p.pixels[i] = p.lerp(grayValue, targetR, colorAlpha);
                   p.pixels[i + 1] = p.lerp(grayValue, targetG, colorAlpha);
                   p.pixels[i + 2] = p.lerp(grayValue, targetB, colorAlpha);
                 }
               }
 
-              // --- MODIFIED LOGIC ENDS HERE ---
+              // --- REVERTED LOGIC ENDS HERE ---
 
               p.updatePixels();
               const dataUrl = canvas.elt.toDataURL();
