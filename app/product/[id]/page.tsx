@@ -15,7 +15,7 @@ type product = {
   price: number;
   createdAt: string; // ISO
   contribution: string[];
-  img_src: string;
+  imageUrl: string;
   matrix: number[][]; //placeholder
 };
 function GetProduct(id: string) {
@@ -45,7 +45,7 @@ function GetProduct(id: string) {
       createdAt: new Date().toISOString(),
       closedAt: new Date().toISOString(),
       contribution: [],
-      img_src: shirtTemplateUrl,
+      imageUrl: shirtTemplateUrl,
       matrix: [[1]],
     } as product;
   }
@@ -57,7 +57,7 @@ function GetProduct(id: string) {
       closedAt: new Date().toISOString(),
       createdAt: new Date().toISOString(),
       contribution: [],
-      img_src: shirtTemplateUrl,
+      imageUrl: shirtTemplateUrl,
       matrix: [[1]],
     } as product;
   }
@@ -68,7 +68,7 @@ function GetProduct(id: string) {
     createdAt: data.createdAt,
     closedAt: (data as any).closedAt,
     contribution: data.contribution,
-    img_src: data.img_src || shirtTemplateUrl,
+    imageUrl: data.imageUrl || shirtTemplateUrl,
     matrix: data.matrix || [[1]],
   } as product;
 }
@@ -88,7 +88,7 @@ export default function ItemPage({
       id: id,
       name: product.name,
       price: product.price,
-      img_src: product.img_src,
+      img_src: product.imageUrl,
       createdAt: product.createdAt,
     });
     
@@ -108,7 +108,7 @@ export default function ItemPage({
               width={600}
               height={600}
               alt=""
-              src={product.img_src}
+              src={product.imageUrl}
               className=""
             ></Image>
             <div className="h-4/5 bg-secondary w-full -z-10 absolute rounded-[10px]"></div>

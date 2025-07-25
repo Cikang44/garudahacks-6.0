@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { apparelTable, shopItemsTable } from "@/lib/db/schema";
-import { eq, lt } from "drizzle-orm";
+import { eq, gt } from "drizzle-orm";
 
 export async function GET() {
     const products = await db.query.shopItemsTable.findMany({
@@ -13,7 +13,7 @@ export async function GET() {
     });
 
     const apparels = await db.query.apparelTable.findMany({
-        where: lt(apparelTable.closedAt, new Date()),
+        where: gt(apparelTable.closedAt, new Date()),
         columns: {
             id: true,
             name: true,

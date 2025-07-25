@@ -2,7 +2,6 @@
 import { use } from "react";
 import ColorElement from "@/components/editor/color";
 import { colorId } from "@/components/editor/color";
-import { patternId } from "@/components/editor/pattern";
 import { useState } from "react";
 import PatternElement from "@/components/editor/pattern";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -11,14 +10,14 @@ import MatrixDisplay from "@/lib/matrixRenderer";
 import useSWR from "swr";
 
 type cell = {
-  selectedPatternId: number;
+  selectedPatternId: string;
   selectedColorId: number;
 };
 
-type patternFile = string;
-type patternDictionary = { [key: patternId]: patternFile };
+type patternFile = any;
+type patternDictionary = { [key: string]: patternFile };
 type colorTable = colorId[];
-type patternTable = patternId[];
+type patternTable = string[];
 type hexColor = string;
 type colorDictionary = { [key: colorId]: hexColor };
 
@@ -29,9 +28,6 @@ type colorDictionary = { [key: colorId]: hexColor };
 //   3: "Batik3.png",
 // };
 
-const res = await fetch('/api/pattern',{method: 'GET'});
-export const allPatterns: patternDictionary = Object.fromEntries((await res.json()).map((v: any) => [v.id, v.description]));
-
 export const allColors: colorDictionary = {
   // ID : hex
   1: "0c0c0d",
@@ -40,7 +36,7 @@ export const allColors: colorDictionary = {
 };
 
 const apparelColors: colorTable = [0, 1, 2];
-const userPatterns: patternTable = [0, 1, 2];
+const userPatterns: patternTable = ["0", "1", "2"];
 
 const fetcher = (url: string) => fetch(url).then(v => v.json());
 
@@ -52,27 +48,26 @@ export default function Editor({
   const { id } = use(params);
   const [selectedCell, setSelectedCell] = useState<cell>({
     selectedColorId: 0,
-    selectedPatternId: 0,
+    selectedPatternId: "0",
   });
   const [message, setMessage] = useState<string>('');
   const [isSaving, setIsSaving] = useState<boolean>(false);
-  const { data, isLoading, error } = useSWR('/api/pattern', fetcher);
   
   const gridWidth = 19;
   const gridHeight = 13;
   
   // Create a simple shirt pattern grid for demonstration
   const [shirtGrid, setShirtGrid] = useState(() => {
-    const grid: [number, number][][] = [];
+    const grid: [string, number][][] = [];
     for (let y = 0; y < gridHeight; y++) {
-      const row: [number, number][] = [];
+      const row: [string, number][] = [];
       for (let x = 0; x < gridWidth; x++) {
         if (
           ((x < 4 && y > 3 && y < 13) || (x > 7 && x < 11 && y > -1 && y < 3) || (x > 14 && x < 19 && y > 3 && y < 13))
         ) {
-          row.push([-1, -1]);
+          row.push(["-1", -1]);
         } else {
-          row.push([0, 0]);
+          row.push(["0", 0]);
         }
       }
       grid.push(row);
@@ -122,30 +117,32 @@ export default function Editor({
     });
   }
   
-  function selectPattern(patternSelect: patternId) {
+  function selectPattern(patternSelect: string) {
     if (!selectedCell) return;
     setSelectedCell((prev) => {
       if (!prev) return prev;
       else {
         console.log(patternSelect);
-        return { ...prev, selectedPatternId: patternSelect + 1};
+        return { ...prev, selectedPatternId: patternSelect };
       }
     });
   }
   
   function handleCellClick(y: number, x: number) {
     const newGrid = [...shirtGrid];
-    if (newGrid[y] && newGrid[y][x] && newGrid[y][x][0] !== -1) {
+    if (newGrid[y] && newGrid[y][x] && newGrid[y][x][0] !== "-1") {
       newGrid[y][x] = [selectedCell.selectedPatternId, selectedCell.selectedColorId];
       setShirtGrid(newGrid);
     }
   }
 
+  const { data, isLoading, error } = useSWR('/api/pattern', fetcher);
+
   if (!data) return <div>Error</div>;
 
-  const allPatterns: patternDictionary = Object.fromEntries(data.map((v: any) => [v.id, v.imageUrl]));
-  const patternNames: {[key: number]:string;} = Object.fromEntries(data.map((v: any) => [v.id, v.names]));
-  const patternDescs: { [key: number]: string; } = Object.fromEntries(data.map((v: any) => [v.id, v.description]));
+  const allPatterns: patternDictionary = Object.fromEntries(data.map((v: any) => [v.id.toString(), v]));
+  const patternNames: {[key: string]:string;} = Object.fromEntries(data.map((v: any) => [v.id.toString(), v.names]));
+  const patternDescs: { [key: string]: string; } = Object.fromEntries(data.map((v: any) => [v.id.toString(), v.description]));
   const currentPattern = allPatterns[selectedCell.selectedPatternId];
   // const patternNames: { [key: number]: string; } = {
   //   1: "Tangerang",
@@ -168,6 +165,7 @@ export default function Editor({
               onColorSelect={selectColor}
               key={color}
               previewColor={parseInt(color)}
+              isSelected={selectedCell.selectedColorId === parseInt(color)}
             />
           ))}
         </CardContent>
@@ -182,6 +180,8 @@ export default function Editor({
                 grid={shirtGrid}
                 gridWidth={gridWidth}
                 onCellClick={handleCellClick}
+                allPatterns={allPatterns}
+                allColors={allColors}
               />
             </CardContent>
           </Card>
@@ -190,11 +190,13 @@ export default function Editor({
         {/* Patterns */}
         <Card className="h-32 flex items-center justify-center bg-amber-800 border-amber-700 rounded-none">
           <CardContent className="flex flex-row gap-6 p-0">
-            {Object.keys(allPatterns).map((pattern) => (
+            {Object.entries(allPatterns).map(([id, pattern]) => (
               <PatternElement
-                key={pattern}
-                selectPattern={parseInt(pattern) - 1}
+                key={id}
+                selectPattern={id}
                 onPatternSelect={selectPattern}
+                allPatterns={allPatterns}
+                isSelected={selectedCell.selectedPatternId === id}
               />
             ))}
           </CardContent>
@@ -206,11 +208,17 @@ export default function Editor({
         <CardContent className="p-6 flex flex-col items-center">
           <Card className="w-64 h-64 bg-amber-700 border-amber-600 mb-4 overflow-hidden">
             <CardContent className="p-0 w-full h-full">
+              {allPatterns[selectedCell.selectedPatternId]?.imageUrl ? (
               <img
-                src={`/patterns/${currentPattern}`}
+                src={allPatterns[selectedCell.selectedPatternId]?.imageUrl}
                 alt={patternNames[selectedCell.selectedPatternId]}
                 className="w-full h-full object-cover"
               />
+              ) : (
+              <div className="w-full h-full flex items-center justify-center text-amber-300">
+                No image available
+              </div>
+              )}
             </CardContent>
           </Card>
           <CardHeader className="text-center w-full">
@@ -220,14 +228,53 @@ export default function Editor({
             <CardDescription className="text-sm text-amber-200 text-justify mb-6 leading-relaxed">
               {patternDescs[selectedCell.selectedPatternId]}
             </CardDescription>
+            
+            {/* Current Selection Display */}
+            <div className="bg-amber-700 p-4 rounded-lg mb-4">
+              <h3 className="text-lg font-semibold mb-2 text-yellow-300">Current Selection</h3>
+              <div className="flex items-center justify-between text-sm">
+                <div className="flex items-center gap-2">
+                  <span className="text-amber-200">Pattern:</span>
+                  <span className="bg-amber-600 px-2 py-1 rounded text-white font-medium">
+                    {patternNames[selectedCell.selectedPatternId] || 'Unknown'}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-amber-200">Color:</span>
+                  <div className="flex items-center gap-1">
+                    <div 
+                      className="w-4 h-4 rounded border border-amber-400"
+                      style={{ backgroundColor: `#${allColors[selectedCell.selectedColorId]}` }}
+                    />
+                    <span className="bg-amber-600 px-2 py-1 rounded text-white font-medium">
+                      #{allColors[selectedCell.selectedColorId]}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </CardHeader>
           <Button
             className="bg-amber-600 hover:bg-amber-500 text-white"
             size="lg"
             onClick={handleSaveData}
+            disabled={isSaving}
           >
-            Save Design
+            {isSaving ? 'Saving...' : 'Save Design'}
           </Button>
+          
+          {/* Status Message */}
+          {message && (
+            <div className={`mt-4 p-3 rounded-lg text-center text-sm font-medium ${
+              message.includes('successfully') 
+                ? 'bg-green-800 text-green-200 border border-green-600' 
+                : message.includes('error') 
+                ? 'bg-red-800 text-red-200 border border-red-600'
+                : 'bg-amber-600 text-amber-200 border border-amber-500'
+            }`}>
+              {message}
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>
