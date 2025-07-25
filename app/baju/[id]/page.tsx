@@ -1,7 +1,7 @@
 "use client";
 
 
-import React, { useState } from 'react';
+import React, { useState, use } from 'react';
 import MatrixDisplay from '../../../lib/matrixRenderer';
 
 const GRID_WIDTH = 19;
@@ -16,43 +16,79 @@ const DEFAULT_CELL: [number, number] = [0, 0];
  * @returns A 2D array of a tuple [patternID, colorID] of numbers.
  */
 const createInitialGrid = (): [number, number][][] => {
-  const grid: [number,number][][] = []; 
+  const grid: [number, number][][] = [];
   for (let y = 0; y < GRID_HEIGHT; y++) {
-    const row: [number,number][] = []; 
-  
+    const row: [number, number][] = [];
+
     for (let x = 0; x < GRID_WIDTH; x++) {
       /* 
       [0,4]->[3,12] inaccessible 
       [8,0]->[10,2] inaccessible
       [15,4]->[18,12] inaccessible
       */
-      if((x<4 && y>3 && y<13) || (x>7 && x<11 && y>-1 && y<3) || (x>14 && x<19 && y>3 && y<13)){
+      if ((x < 4 && y > 3 && y < 13) || (x > 7 && x < 11 && y > -1 && y < 3) || (x > 14 && x < 19 && y > 3 && y < 13)) {
         row.push(FORBIDDEN_CELL)
       }
-      else{
+      else {
         row.push(DEFAULT_CELL);
       }
 
     }
 
-    grid.push(row); 
+    grid.push(row);
   }
   return grid;
 
 };
 
-export default function Matrix() {
+export default function Matrix({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
+  const { id } = use(params)
 
-  const [grid, setGrid] = useState<[number,number][][]>(createInitialGrid);
-
+  const [grid, setGrid] = useState<[number, number][][]>(createInitialGrid);
   const [rowInput, setRowInput] = useState<string>('0');
   const [colInput, setColInput] = useState<string>('0');
   const [colorInput, setColorInput] = useState<string>('0');
   const [patternInput, setPatternInput] = useState<string>('0');
   const [message, setMessage] = useState<string>('');
+  const [isSaving, setIsSaving] = useState<boolean>(false);
 
+  const handleSaveData = async () => {
+    setIsSaving(true);
+    setMessage('Saving...');
 
-  const handleUpdateTile = (e: React.FormEvent) => {
+    try {
+      const payload = {
+        id: id,
+        data: grid,
+      };
+      const response = await fetch('/api/save-grid', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save the grid.');
+      }
+
+      const result = await response.json();
+      setMessage(`Grid saved successfully!`);
+
+    } catch (error) {
+      console.error(error);
+      setMessage('An error occurred while saving.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleUpdateTile = async (e: React.FormEvent) => {
     e.preventDefault(); // Prevent the form from reloading the page.
 
     const row = parseInt(rowInput);
@@ -68,23 +104,24 @@ export default function Matrix() {
       setMessage(`Coordinates out of bounds. Row must be 0-${GRID_HEIGHT - 1}, Col must be 0-${GRID_WIDTH - 1}.`);
       return;
     }
-    
-    if (grid[row][col] == FORBIDDEN_CELL){
+
+    if (grid[row][col] == FORBIDDEN_CELL) {
       setMessage('You cannot put a pattern there.');
       return;
     }
 
-    const newGrid: [number,number][][] = []; 
+    const newGrid: [number, number][][] = [];
     for (const row of grid) {
-        const newRow = [...row];
-        newGrid.push(newRow);
+      const newRow = [...row];
+      newGrid.push(newRow);
     }
-    
-    newGrid[row][col] = [patternID,colorID];
+
+    newGrid[row][col] = [patternID, colorID];
     setGrid(newGrid);
     setMessage('');
-    // setMessage(`Successfully updated tile at (${row}, ${col}) to pattern ${patternID} with the color ${colorID}.`);
+    await handleSaveData();
   };
+
 
 
   return (
@@ -139,8 +176,9 @@ export default function Matrix() {
               <button
                 type="submit"
                 className="w-full bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
+                disabled={isSaving}
               >
-                Update Tile
+                {isSaving ? 'Saving...' : 'Insert Pattern'}
               </button>
             </form>
             {message && (
