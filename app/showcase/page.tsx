@@ -187,7 +187,7 @@ export default function ApparelShowcasePage() {
   const apparels: Apparel[] = data.map((v: any) => ({
     id: v.id,
     name: v.name,
-    imageUrl: v.imageUrl ?? '/template/shirt.png',
+    imageUrl: v.imageUrl ?? '/template/shirt_half.png',
     buttonState: v.imageUrl ? "buy" : "contribute",
   }));
 
