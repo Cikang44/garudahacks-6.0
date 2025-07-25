@@ -1,6 +1,6 @@
 import { db } from "@/lib/db";
 import { shopItemsTable } from "@/lib/db/schema";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { NextRequest } from "next/server";
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -12,7 +12,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     };
 
     const product: any = await db.query.shopItemsTable.findFirst({
-        where: eq(shopItemsTable.id, productId),
+        where: and(eq(shopItemsTable.id, productId), eq(shopItemsTable.isPurchasable, true)),
         with: {
             apparel: {
                 columns: {},

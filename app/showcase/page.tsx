@@ -1,7 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef, useCallback } from "react";
 import { Card, CardContent } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
@@ -12,6 +11,7 @@ import {
   type CarouselApi,
 } from "@/components/ui/carousel";
 import Autoplay from "embla-carousel-autoplay";
+import useSWR from "swr";
 
 type ApparelStatus = "Active" | "Locked";
 type ButtonState = "contribute" | "buy";
@@ -77,6 +77,8 @@ interface ApparelCardProps {
   index: number;
   current: number;
 }
+
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
 
 const ApparelCard: React.FC<ApparelCardProps> = ({ item, index, current }) => {
   const router = useRouter();
@@ -177,6 +179,18 @@ export default function ApparelShowcasePage() {
     console.log(current);
   }, [current]);
 
+  const { data, isLoading, error } = useSWR('/api/showcase', fetcher);
+
+  if (isLoading) return <div className="text-white flex items-center justify-center h-screen">Loading...</div>;
+  if (error) return <div className="text-white flex items-center justify-center h-screen">Error loading showcase</div>;
+
+  const apparels: Apparel[] = data.map((v: any) => ({
+    id: v.id,
+    name: v.name,
+    imageUrl: v.imageUrl ?? '/template/shirt.png',
+    buttonState: v.imageUrl ? "buy" : "contribute",
+  }));
+
   return (
     <div className="w-full text-accent-foreground gap-36 bg-background flex flex-col items-center justify-center p-4 overflow-hidden">
       <div className="flex flex-col items-center">
@@ -196,7 +210,7 @@ export default function ApparelShowcasePage() {
           className="w-full group"
         >
           <CarouselContent className="-ml-8 select-none">
-            {apparelData.map((item, index) => (
+            {apparels.map((item, index) => (
               <CarouselItem key={item.id} className="pl-8 lg:basis-1/3 ">
                 <div className="p-1">
                   <ApparelCard item={item} index={index} current={current} />

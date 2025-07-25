@@ -32,6 +32,7 @@ export const patternsTable = pgTable('patterns', {
 
 export const apparelTable = pgTable('apparel', {
     id: uuid('id').primaryKey().defaultRandom(),
+    name: varchar('name', { length: 255 }).notNull(),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
     closedAt: timestamp('closed_at').notNull().defaultNow(),
