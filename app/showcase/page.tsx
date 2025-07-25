@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import {
   Carousel,
   CarouselContent,
@@ -28,8 +29,7 @@ const apparelData: Apparel[] = [
   {
     id: 1,
     name: "Cosmic Dreamer Tee",
-    imageUrl:
-      "https://placehold.co/600x800/1a1a1a/ffffff.png?text=Shirt+1&font=raleway",
+    imageUrl: "/template/shirt.png",
     status: "Active",
     countdownTo: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString(),
     buttonState: "contribute",
@@ -37,8 +37,7 @@ const apparelData: Apparel[] = [
   {
     id: 2,
     name: "Retro Wave Hoodie",
-    imageUrl:
-      "https://placehold.co/600x800/1a1a1a/ffffff.png?text=Apparel+2&font=raleway",
+    imageUrl: "/template/shirt.png",
     status: "Active",
     countdownTo: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(),
     buttonState: "contribute",
@@ -46,8 +45,7 @@ const apparelData: Apparel[] = [
   {
     id: 3,
     name: "Cyberpunk Jacket",
-    imageUrl:
-      "https://placehold.co/600x800/1a1a1a/ffffff.png?text=Shirt+3&font=raleway",
+    imageUrl: "/template/shirt.png",
     status: "Locked",
     countdownTo: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString(),
     buttonState: "buy",
@@ -55,8 +53,7 @@ const apparelData: Apparel[] = [
   {
     id: 4,
     name: "Minimalist Crewneck",
-    imageUrl:
-      "https://placehold.co/600x800/1a1a1a/ffffff.png?text=Apparel+4&font=raleway",
+    imageUrl: "/template/shirt.png",
     status: "Active",
     countdownTo: new Date(Date.now() + 1 * 24 * 60 * 60 * 1000).toISOString(),
     buttonState: "buy",
@@ -64,8 +61,7 @@ const apparelData: Apparel[] = [
   {
     id: 5,
     name: "Graffiti Art Bomber",
-    imageUrl:
-      "https://placehold.co/600x800/1a1a1a/ffffff.png?text=Shirt+5&font=raleway",
+    imageUrl: "/template/shirt.png",
     status: "Locked",
     countdownTo: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(),
     buttonState: "contribute",
@@ -78,57 +74,11 @@ interface CountdownTimerProps {
 
 interface ApparelCardProps {
   item: Apparel;
+  index: number;
+  current: number;
 }
 
-const CountdownTimer: React.FC<CountdownTimerProps> = ({ targetDate }) => {
-  const calculateTimeLeft = useCallback(() => {
-    const difference = +new Date(targetDate) - +new Date();
-    let timeLeft: { [key: string]: number } = {};
-
-    if (difference > 0) {
-      timeLeft = {
-        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
-        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
-        minutes: Math.floor((difference / 1000 / 60) % 60),
-        seconds: Math.floor((difference / 1000) % 60),
-      };
-    }
-    return timeLeft;
-  }, [targetDate]);
-
-  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setTimeLeft(calculateTimeLeft());
-    }, 1000);
-
-    return () => clearTimeout(timer);
-  });
-
-  const timerComponents = Object.entries(timeLeft).map(([interval, value]) => (
-    <div key={interval} className="flex flex-col items-center">
-      <span className="text-2xl md:text-3xl font-bold text-accent-foreground">
-        {String(value).padStart(2, "0")}
-      </span>
-      <span className="text-xs uppercase text-accent-foreground/50">
-        {interval}
-      </span>
-    </div>
-  ));
-
-  return (
-    <div className="flex justify-center space-x-4 my-4">
-      {timerComponents.length ? (
-        timerComponents
-      ) : (
-        <span className="text-xl font-bold">Time's up!</span>
-      )}
-    </div>
-  );
-};
-
-const ApparelCard: React.FC<ApparelCardProps> = ({ item }) => {
+const ApparelCard: React.FC<ApparelCardProps> = ({ item, index, current }) => {
   const router = useRouter();
   const handleButtonClick = useCallback(
     (type: ButtonState) => {
@@ -141,18 +91,31 @@ const ApparelCard: React.FC<ApparelCardProps> = ({ item }) => {
   );
 
   return (
-    <Card className="w-full h-full border-none overflow-hidden bg-transparent shadow-none">
-      <div className="relative ">
-        <Badge
-          variant={item.status === "Locked" ? "destructive" : "default"}
-          className="absolute top-4 left-4 z-10"
+    <Card
+      className={`w-full has-hover: h-full relative border-none text-primary  overflow-hidden bg-transparent shadow-none flex flex-col items-center`}
+    >
+      <div className="absolute peer gap-4 flex flex-col items-center justify-center w-fit h-4/5 z-20 text-[28px] text-center">
+        <p>
+          You can contribute a portion to <br /> this apparel before the catalog
+          resets
+        </p>
+        <Button
+          onClick={() => handleButtonClick(item.buttonState)}
+          size={"lg"}
+          className="w-full text-[28px] h-1/8 transition-all pointer-events-auto"
         >
-          {item.status}
-        </Badge>
-        <img
+          {item.buttonState}
+        </Button>
+      </div>
+      <div className="relative flex peer-hover:opacity-40 opacity-100 transition-opacity justify-center items-center h-[600px]">
+        <div className="bg-secondary absolute w-full h-4/5 -z-10 rounded-[10px]"></div>
+        <Image
           src={item.imageUrl}
+          width={400}
+          height={600}
           alt={item.name}
-          className="w-full h-auto object-cover aspect-[3/4] duration-300 ease-in-out hover:scale-105"
+          className="h-4/5 w-auto object-cover duration-300 ease-in-out "
+          style={{ height: current == index + 1 ? "100%" : "80%" }}
           onError={(e: React.SyntheticEvent<HTMLImageElement, Event>) => {
             const target = e.target as HTMLImageElement;
             target.onerror = null;
@@ -161,15 +124,7 @@ const ApparelCard: React.FC<ApparelCardProps> = ({ item }) => {
           }}
         />
       </div>
-      <CardContent className="p-4 text-center">
-        <CountdownTimer targetDate={item.countdownTo} />
-        <Button
-          onClick={() => handleButtonClick(item.buttonState)}
-          className="capitalize mt-2 w-full"
-        >
-          {item.buttonState}
-        </Button>
-      </CardContent>
+      <CardContent className="p-4 text-center"></CardContent>
     </Card>
   );
 };
@@ -188,7 +143,6 @@ export default function ApparelShowcasePage() {
     const scrollProgress = api.scrollProgress();
     const slides = api.slideNodes();
 
-    console.log(scrollProgress);
     slides.forEach((slide: any, index: any) => {
       const diff = Math.abs(index - scrollProgress * (slides.length - 1));
       const scale = 1 - Math.min(diff * 0.3, 0.3);
@@ -219,9 +173,19 @@ export default function ApparelShowcasePage() {
     };
   }, [api, handleScroll]);
 
+  useEffect(() => {
+    console.log(current);
+  }, [current]);
+
   return (
-    <div className="w-full h-screen bg-background flex flex-col items-center justify-center p-4 overflow-hidden">
-      <div className="w-full max-w-7xl mx-auto">
+    <div className="w-full text-accent-foreground gap-36 bg-background flex flex-col items-center justify-center p-4 overflow-hidden">
+      <div className="flex flex-col items-center">
+        <div className="stoke-regular text-[64px] mt-72">Wastra Nusantara</div>
+        <div className="text-[28px] text-[#AE8263] ">
+          Blending Cultures through Batik
+        </div>
+      </div>
+      <div className="w-full mx-auto">
         <Carousel
           setApi={setApi}
           plugins={[plugin.current]}
@@ -231,19 +195,16 @@ export default function ApparelShowcasePage() {
           }}
           className="w-full group"
         >
-          <CarouselContent className="-ml-8">
-            {apparelData.map((item) => (
+          <CarouselContent className="-ml-8 select-none">
+            {apparelData.map((item, index) => (
               <CarouselItem key={item.id} className="pl-8 lg:basis-1/3 ">
                 <div className="p-1">
-                  <ApparelCard item={item} />
+                  <ApparelCard item={item} index={index} current={current} />
                 </div>
               </CarouselItem>
             ))}
           </CarouselContent>
         </Carousel>
-      </div>
-      <div className="py-4 text-center text-sm text-muted-foreground">
-        Item {current} of {apparelData.length}
       </div>
     </div>
   );

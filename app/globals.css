@@ -136,6 +136,9 @@
   --sidebar-ring: oklch(0.556 0 0);
 }
 
+.apparel-button-container:hover .apparel-button {
+  visibility: visible;
+}
 @layer base {
   * {
     @apply border-border outline-ring/50;
