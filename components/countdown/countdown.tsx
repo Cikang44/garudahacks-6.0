@@ -60,7 +60,7 @@ export default function Countdown({ targetDate }: { targetDate: string }) {
     return () => clearInterval(intervalId);
   }, [targetDate]); // Rerun the effect if the targetDate prop changes
   return (
-    <div className="absolute  w-screen h-screen flex justify-center items-center">
+    <div className="absolute  w-full flex justify-center items-center">
       <div className="absolute top-5 bg-secondary text-secondary-foreground px-8 py-4 rounded-[10px] text-[28px] flex flex-row gap-4 items-center">
         <p>
           Catalog Reset in : {timeLeft?.hours}h {timeLeft?.minutes}m{" "}
