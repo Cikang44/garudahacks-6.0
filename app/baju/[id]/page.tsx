@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import MatrixDisplay from "../../../components/matrixRenderer";
 
 const GRID_WIDTH = 19;
@@ -38,18 +38,54 @@ const createInitialGrid = (): [number, number][][] => {
 
 };
 
-export default function Matrix() {
+export default function Matrix({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}) {
+  const { id } = use(params)
 
   const [grid, setGrid] = useState<[number, number][][]>(createInitialGrid);
-
   const [rowInput, setRowInput] = useState<string>('0');
   const [colInput, setColInput] = useState<string>('0');
   const [colorInput, setColorInput] = useState<string>('0');
   const [patternInput, setPatternInput] = useState<string>('0');
   const [message, setMessage] = useState<string>('');
+  const [isSaving, setIsSaving] = useState<boolean>(false);
 
+  const handleSaveData = async () => {
+    setIsSaving(true);
+    setMessage('Saving...');
 
-  const handleUpdateTile = (e: React.FormEvent) => {
+    try {
+      const payload = {
+        id: id,
+        data: grid,
+      };
+      const response = await fetch('/api/save-grid', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to save the grid.');
+      }
+
+      const result = await response.json();
+      setMessage(`Grid saved successfully!`);
+
+    } catch (error) {
+      console.error(error);
+      setMessage('An error occurred while saving.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  const handleUpdateTile = async (e: React.FormEvent) => {
     e.preventDefault(); // Prevent the form from reloading the page.
 
     const row = parseInt(rowInput);
@@ -80,8 +116,9 @@ export default function Matrix() {
     newGrid[row][col] = [patternID, colorID];
     setGrid(newGrid);
     setMessage('');
-    // setMessage(`Successfully updated tile at (${row}, ${col}) to pattern ${patternID} with the color ${colorID}.`);
+    await handleSaveData();
   };
+
 
 
   return (
@@ -136,8 +173,9 @@ export default function Matrix() {
               <button
                 type="submit"
                 className="w-full bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors"
+                disabled={isSaving}
               >
-                Update Tile
+                {isSaving ? 'Saving...' : 'Insert Pattern'}
               </button>
             </form>
             {message && (

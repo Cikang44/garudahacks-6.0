@@ -1,6 +1,5 @@
 "use client";
 import ColorElement from "@/components/editor/color";
-import ApparelPreview from "@/components/editor/preview";
 import { colorId } from "@/components/editor/color";
 import { patternId } from "@/components/editor/pattern";
 import { useState } from "react";
