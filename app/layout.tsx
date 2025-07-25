@@ -14,6 +14,8 @@ import { Avatar } from '@/components/ui/avatar';
 import { currentUser } from '@clerk/nextjs/server';
 import Image from 'next/image';
 import Link from 'next/link';
+import { CartProvider } from '@/contexts/CartContext';
+import { ShoppingCart } from 'lucide-react';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -39,40 +41,45 @@ export default async function RootLayout({
 
   return (
     <ClerkProvider>
-      <html lang="en" className='dark text-white'>
-        <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-          {/* <Countdown targetDate="2025-12-31T23:59:59-05:00"></Countdown> */}
-          <header className="flex justify-end items-center p-4 gap-4 h-16">
-            <SignedOut>
-              <SignInButton />
-              <SignUpButton>
-                <button className="bg-[#6c47ff] text-ceramic-white rounded-full font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 cursor-pointer">
-                  Sign Up
-                </button>
-              </SignUpButton>
-            </SignedOut>
-            <SignedIn>
-              {
-                user ? (
-                  <Avatar className="w-10 h-10">
-                    <Link href={'/profile'}>
-                      <Image
-                        src={user.imageUrl || "/default-avatar.png"}
-                        alt={user.fullName || "User Avatar"}
-                        width={40}
-                        height={40}
-                        className="rounded-full"
-                      />
-                    </Link>
-                  </Avatar>
-                ) : (
-                  <SignInButton />
-                )}
-            </SignedIn>
-          </header>
-          {children}
-        </body>
-      </html>
+      <CartProvider>
+        <html lang="en" className='dark text-white'>
+          <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+            {/* <Countdown targetDate="2025-12-31T23:59:59-05:00"></Countdown> */}
+            <header className="flex justify-end items-center p-4 gap-4 h-16">
+              <SignedOut>
+                <SignInButton />
+                <SignUpButton>
+                  <button className="bg-[#6c47ff] text-ceramic-white rounded-full font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 cursor-pointer">
+                    Sign Up
+                  </button>
+                </SignUpButton>
+              </SignedOut>
+              <SignedIn>
+                <Link href="/cart" className="relative p-2">
+                  <ShoppingCart className="w-6 h-6" />
+                </Link>
+                {
+                  user ? (
+                    <Avatar className="w-10 h-10">
+                      <Link href={'/profile'}>
+                        <Image
+                          src={user.imageUrl || "/default-avatar.png"}
+                          alt={user.fullName || "User Avatar"}
+                          width={40}
+                          height={40}
+                          className="rounded-full"
+                        />
+                      </Link>
+                    </Avatar>
+                  ) : (
+                    <SignInButton />
+                  )}
+              </SignedIn>
+            </header>
+            {children}
+          </body>
+        </html>
+      </CartProvider>
     </ClerkProvider>
   )
 }

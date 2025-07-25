@@ -5,6 +5,8 @@ import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
 import useSWR from "swr";
 import Countdown from "@/components/countdown/countdown";
+import { useCart } from "@/contexts/CartContext";
+import { useRouter } from "next/navigation";
 
 const shirtTemplateUrl = "/template/shirt.png";
 
@@ -78,6 +80,21 @@ export default function ItemPage({
   const { id } = use(params);
   const product = GetProduct(id);
   const friendlyDate = format(new Date(product.createdAt), "MMMM do yyyy");
+  const { addItem } = useCart();
+  const router = useRouter();
+
+  const handleAddToCart = () => {
+    addItem({
+      id: id,
+      name: product.name,
+      price: product.price,
+      img_src: product.img_src,
+      createdAt: product.createdAt,
+    });
+    
+    // Optionally redirect to cart or show a success message
+    router.push('/cart');
+  };
 
   return (
     <>
@@ -111,8 +128,11 @@ export default function ItemPage({
               >
                 View Background
               </Button>
-              <Button className="text-[28px] w-full p-10 rounded-[8px]">
-                Purchase {product.price}{" "}
+              <Button 
+                className="text-[28px] w-full p-10 rounded-[8px]"
+                onClick={handleAddToCart}
+              >
+                Purchase {product.price.toLocaleString('id-ID', { style: 'currency', currency: 'IDR' })}
               </Button>
             </div>
           </div>
