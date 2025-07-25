@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { useParams } from "next/navigation";
 import MatrixDisplay from "@/lib/matrixRenderer";
+import CanvasMatrixDisplay from "@/components/CanvasMatrixDisplay";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardTitle, CardDescription } from "@/components/ui/card";
 import { ArrowLeft, ShoppingCart, Heart } from "lucide-react";
@@ -175,10 +176,11 @@ export default function ProductView() {
             <CardContent className="p-8">
               <div className="text-center mb-4">
                 <h3 className="text-lg font-semibold text-white">
-                  Click on any pattern to view details
+                  Product Design View
                 </h3>
+                <p className="text-amber-200 text-sm">Click on patterns to view details</p>
               </div>
-              <MatrixDisplay
+              <CanvasMatrixDisplay
                 grid={product.grid}
                 gridWidth={product.gridWidth}
                 onCellClick={handleCellClick}

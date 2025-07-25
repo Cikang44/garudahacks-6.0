@@ -6,6 +6,7 @@ import { patternId } from "@/components/editor/pattern";
 import { useState } from "react";
 import PatternElement from "@/components/editor/pattern";
 import MatrixDisplay from "@/lib/matrixRenderer";
+import CanvasMatrixDisplay from "@/components/CanvasMatrixDisplay";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 
@@ -122,7 +123,13 @@ export default function Editor() {
         <div className="flex-1 flex items-center justify-center p-8">
           <Card className="bg-amber-700 border-amber-600 shadow-xl">
             <CardContent className="p-8">
-              <MatrixDisplay
+              <div className="text-center mb-4">
+                <h3 className="text-lg font-semibold text-white">
+                  Canvas-Based Shirt Designer
+                </h3>
+                <p className="text-amber-200 text-sm">Click on cells to apply selected pattern and color</p>
+              </div>
+              <CanvasMatrixDisplay
                 grid={shirtGrid}
                 gridWidth={gridWidth}
                 onCellClick={handleCellClick}

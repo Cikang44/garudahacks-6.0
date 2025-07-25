@@ -10,6 +10,7 @@ import {
   CarouselPrevious 
 } from "@/components/ui/carousel";
 import ShirtDisplay from "@/components/ShirtDisplay";
+import CanvasShirtDisplay from "@/components/CanvasShirtDisplay";
 import { Edit3, Eye, ShoppingCart } from "lucide-react";
 
 // Product data structure
@@ -206,10 +207,10 @@ export default function Catalog() {
                   <CardContent className="p-4 flex flex-col h-full">
                     {/* Shirt Preview */}
                     <div className="flex justify-center mb-4 bg-amber-700 rounded-lg p-4 relative">
-                      <ShirtDisplay 
+                      <CanvasShirtDisplay 
                         grid={product.grid}
                         gridWidth={product.gridWidth}
-                        scale={0.8}
+                        scale={0.6}
                         id={product.id}
                       />
                       
