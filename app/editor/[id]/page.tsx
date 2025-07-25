@@ -5,7 +5,13 @@ import { colorId } from "@/components/editor/color";
 import { patternId } from "@/components/editor/pattern";
 import { useState } from "react";
 import PatternElement from "@/components/editor/pattern";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import MatrixDisplay from "@/lib/matrixRenderer";
 import useSWR from "swr";
@@ -29,8 +35,10 @@ type colorDictionary = { [key: colorId]: hexColor };
 //   3: "Batik3.png",
 // };
 
-const res = await fetch('/api/pattern',{method: 'GET'});
-export const allPatterns: patternDictionary = Object.fromEntries((await res.json()).map((v: any) => [v.id, v.description]));
+const res = await fetch("/api/pattern", { method: "GET" });
+export const allPatterns: patternDictionary = Object.fromEntries(
+  (await res.json()).map((v: any) => [v.id, v.description])
+);
 
 export const allColors: colorDictionary = {
   // ID : hex
@@ -42,7 +50,7 @@ export const allColors: colorDictionary = {
 const apparelColors: colorTable = [0, 1, 2];
 const userPatterns: patternTable = [0, 1, 2];
 
-const fetcher = (url: string) => fetch(url).then(v => v.json());
+const fetcher = (url: string) => fetch(url).then((v) => v.json());
 
 export default function Editor({
   params,
@@ -54,13 +62,13 @@ export default function Editor({
     selectedColorId: 0,
     selectedPatternId: 0,
   });
-  const [message, setMessage] = useState<string>('');
+  const [message, setMessage] = useState<string>("");
   const [isSaving, setIsSaving] = useState<boolean>(false);
-  const { data, isLoading, error } = useSWR('/api/pattern', fetcher);
-  
+  const { data, isLoading, error } = useSWR("/api/pattern", fetcher);
+
   const gridWidth = 19;
   const gridHeight = 13;
-  
+
   // Create a simple shirt pattern grid for demonstration
   const [shirtGrid, setShirtGrid] = useState(() => {
     const grid: [number, number][][] = [];
@@ -68,7 +76,9 @@ export default function Editor({
       const row: [number, number][] = [];
       for (let x = 0; x < gridWidth; x++) {
         if (
-          ((x < 4 && y > 3 && y < 13) || (x > 7 && x < 11 && y > -1 && y < 3) || (x > 14 && x < 19 && y > 3 && y < 13))
+          (x < 4 && y > 3 && y < 13) ||
+          (x > 7 && x < 11 && y > -1 && y < 3) ||
+          (x > 14 && x < 19 && y > 3 && y < 13)
         ) {
           row.push([-1, -1]);
         } else {
@@ -79,39 +89,38 @@ export default function Editor({
     }
     return grid;
   });
-  
+
   const handleSaveData = async () => {
     setIsSaving(true);
-    setMessage('Saving...');
-    
+    setMessage("Saving...");
+
     try {
       const payload = {
         id: id,
         data: shirtGrid,
       };
-      const response = await fetch('/api/save-grid', {
-        method: 'POST',
+      const response = await fetch("/api/save-grid", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(payload),
       });
-      
+
       if (!response.ok) {
-        throw new Error('Failed to save the grid.');
+        throw new Error("Failed to save the grid.");
       }
-      
+
       const result = await response.json();
       setMessage(`Grid saved successfully!`);
-      
     } catch (error) {
       console.error(error);
-      setMessage('An error occurred while saving.');
+      setMessage("An error occurred while saving.");
     } finally {
       setIsSaving(false);
     }
   };
-  
+
   function selectColor(colorSelect: colorId) {
     if (!selectedCell) return;
     setSelectedCell((prev) => {
@@ -121,31 +130,40 @@ export default function Editor({
       }
     });
   }
-  
+
   function selectPattern(patternSelect: patternId) {
     if (!selectedCell) return;
     setSelectedCell((prev) => {
       if (!prev) return prev;
       else {
         console.log(patternSelect);
-        return { ...prev, selectedPatternId: patternSelect + 1};
+        return { ...prev, selectedPatternId: patternSelect + 1 };
       }
     });
   }
-  
+
   function handleCellClick(y: number, x: number) {
     const newGrid = [...shirtGrid];
     if (newGrid[y] && newGrid[y][x] && newGrid[y][x][0] !== -1) {
-      newGrid[y][x] = [selectedCell.selectedPatternId, selectedCell.selectedColorId];
+      newGrid[y][x] = [
+        selectedCell.selectedPatternId,
+        selectedCell.selectedColorId,
+      ];
       setShirtGrid(newGrid);
     }
   }
 
   if (!data) return <div>Error</div>;
 
-  const allPatterns: patternDictionary = Object.fromEntries(data.map((v: any) => [v.id, v.imageUrl]));
-  const patternNames: {[key: number]:string;} = Object.fromEntries(data.map((v: any) => [v.id, v.names]));
-  const patternDescs: { [key: number]: string; } = Object.fromEntries(data.map((v: any) => [v.id, v.description]));
+  const allPatterns: patternDictionary = Object.fromEntries(
+    data.map((v: any) => [v.id, v.imageUrl])
+  );
+  const patternNames: { [key: number]: string } = Object.fromEntries(
+    data.map((v: any) => [v.id, v.names])
+  );
+  const patternDescs: { [key: number]: string } = Object.fromEntries(
+    data.map((v: any) => [v.id, v.description])
+  );
   const currentPattern = allPatterns[selectedCell.selectedPatternId];
   // const patternNames: { [key: number]: string; } = {
   //   1: "Tangerang",
@@ -176,7 +194,7 @@ export default function Editor({
       <div className="flex-1 flex flex-col">
         {/* Matrix */}
         <div className="flex-1 flex items-center justify-center p-8">
-          <Card className="bg-amber-700 border-amber-600 shadow-xl">
+          <Card className="bg-secondary shadow-xl">
             <CardContent className="p-8">
               <MatrixDisplay
                 grid={shirtGrid}
@@ -188,7 +206,7 @@ export default function Editor({
         </div>
 
         {/* Patterns */}
-        <Card className="h-32 flex items-center justify-center bg-amber-800 border-amber-700 rounded-none">
+        <Card className="h-32 flex items-center justify-center bg-secondary rounded-md">
           <CardContent className="flex flex-row gap-6 p-0">
             {Object.keys(allPatterns).map((pattern) => (
               <PatternElement
@@ -202,9 +220,9 @@ export default function Editor({
       </div>
 
       {/* Pattern info */}
-      <Card className="w-80 bg-amber-800 border-amber-700 rounded-none flex flex-col">
+      <Card className="w-80 rounded-none flex flex-col">
         <CardContent className="p-6 flex flex-col items-center">
-          <Card className="w-64 h-64 bg-amber-700 border-amber-600 mb-4 overflow-hidden">
+          <Card className="w-64 h-64 bg-secondary mb-4 overflow-hidden">
             <CardContent className="p-0 w-full h-full">
               <img
                 src={`/patterns/${currentPattern}`}
