@@ -211,7 +211,7 @@ export default function ApparelShowcasePage() {
         >
           <CarouselContent className="-ml-8 select-none">
             {apparels.map((item, index) => (
-              <CarouselItem key={item.id} className="pl-8 lg:basis-1/3 ">
+              <CarouselItem key={item.id + index} className="pl-8 lg:basis-1/3 ">
                 <div className="p-1">
                   <ApparelCard item={item} index={index} current={current} />
                 </div>

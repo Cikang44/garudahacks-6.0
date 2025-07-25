@@ -1,266 +1,123 @@
 "use client";
-import { useState } from "react";
-import { useParams } from "next/navigation";
-import MatrixDisplay from "@/lib/matrixRenderer";
-import CanvasMatrixDisplay from "@/components/CanvasMatrixDisplay";
+import { use } from "react";
+import Image from "next/image";
+import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardTitle, CardDescription } from "@/components/ui/card";
-import { ArrowLeft, ShoppingCart, Heart } from "lucide-react";
-import Link from "next/link";
+import useSWR from "swr";
+import Countdown from "@/components/countdown/countdown";
 
-// Product data structure
-type ProductGrid = [number, number][][];
+const shirtTemplateUrl = "/template/shirt.png";
 
-interface Product {
-  id: string;
+type product = {
   name: string;
-  description: string;
   price: number;
-  grid: ProductGrid;
-  gridWidth: number;
-  gridHeight: number;
-  creator: string;
-  createdAt: string;
-}
-
-// Pattern and color dictionaries
-const allPatterns: { [key: number]: string; } = {
-  1: "Batik1.png",
-  2: "Batik2.png",
-  3: "Batik3.png",
+  createdAt: string; // ISO
+  contribution: string[];
+  img_src: string;
+  matrix: number[][]; //placeholder
 };
+function GetProduct(id: string) {
+  // const matrix: number[][] = [[1]];
+  // const thisBatik: product = {
+  //   contribution: [],
+  //   img_src: `${shirtTemplateUrl}`,
+  //   createdAt: "2025-07-24T19:28:55+00:00",
+  //   matrix: matrix,
+  //   name: "Batik #67",
+  //   price: 259000,
+  // };
+  // return thisBatik;
 
-const allColors: { [key: number]: string; } = {
-  1: "d2691e", // saddle brown
-  2: "cd5c5c", // indian red
-  3: "b22222", // fire brick
-};
-
-const patternNames: { [key: number]: string; } = {
-  1: "Aceh Traditional",
-  2: "Javanese Heritage",
-  3: "Balinese Classic"
-};
-
-const patternDescs: { [key: number]: string; } = {
-  1: "Traditional Acehnese batik pattern featuring intricate geometric designs that represent the rich cultural heritage of Aceh region.",
-  2: "Classic Javanese batik with elegant flowing motifs that symbolize harmony and balance in traditional Indonesian art.",
-  3: "Balinese batik pattern inspired by Hindu-Buddhist traditions, featuring ornate decorative elements and spiritual symbolism."
-};
-
-// Mock product data - in a real app this would come from an API
-const mockProducts: { [key: string]: Product; } = {
-  "1": {
-    id: "1",
-    name: "Royal Aceh Heritage Shirt",
-    description: "An exquisite batik shirt featuring traditional Acehnese patterns. This piece combines modern tailoring with centuries-old design traditions, creating a timeless garment perfect for formal occasions.",
-    price: 299.99,
-    creator: "Master Artisan Sari",
-    createdAt: "2024-12-15",
-    gridWidth: 19,
-    gridHeight: 13,
-    grid: (() => {
-      const grid: ProductGrid = [];
-      for (let y = 0; y < 13; y++) {
-        const row: [number, number][] = [];
-        for (let x = 0; x < 19; x++) {
-          if (
-            ((x < 4 && y > 3 && y < 13) || (x > 7 && x < 11 && y > -1 && y < 3) || (x > 14 && x < 19 && y > 3 && y < 13))
-          ) {
-            row.push([-1, -1]);
-          } else {
-            // Create a pattern with different batik designs
-            const patternId = Math.floor(Math.random() * 3) + 1;
-            const colorId = Math.floor(Math.random() * 3) + 1;
-            row.push([patternId, colorId]);
-          }
-        }
-        grid.push(row);
-      }
-      return grid;
-    })(),
-  },
-  "2": {
-    id: "2",
-    name: "Elegant Javanese Formal Wear",
-    description: "A sophisticated batik shirt showcasing the refined beauty of Javanese artistic traditions. Perfect for business meetings or cultural events.",
-    price: 349.99,
-    creator: "Designer Indira",
-    createdAt: "2024-12-10",
-    gridWidth: 19,
-    gridHeight: 13,
-    grid: (() => {
-      const grid: ProductGrid = [];
-      for (let y = 0; y < 13; y++) {
-        const row: [number, number][] = [];
-        for (let x = 0; x < 19; x++) {
-          if (
-            ((x < 4 && y > 3 && y < 13) || (x > 7 && x < 11 && y > -1 && y < 3) || (x > 14 && x < 19 && y > 3 && y < 13))
-          ) {
-            row.push([-1, -1]);
-          } else {
-            row.push([2, 2]); // Predominantly Javanese pattern
-          }
-        }
-        grid.push(row);
-      }
-      return grid;
-    })(),
-  }
-};
-
-export default function ProductView() {
-  const params = useParams();
-  const productId = params.id as string;
-  const product = mockProducts[productId];
-
-  const [selectedCell, setSelectedCell] = useState<{
-    x: number;
-    y: number;
-    patternId: number;
-    colorId: number;
-  } | null>(null);
-
-  const [isFavorited, setIsFavorited] = useState(false);
-
-  // Handle cell clicks to show pattern information
-  function handleCellClick(y: number, x: number) {
-    if (product.grid[y] && product.grid[y][x]) {
-      const [patternId, colorId] = product.grid[y][x];
-      if (patternId !== -1) {
-        setSelectedCell({ x, y, patternId, colorId });
-      }
+  const { data, isLoading, error } = useSWR(`/api/product/${id}`, async (url: string) => {
+    const res = await fetch(url);
+    if (!res.ok) {
+      throw new Error("Failed to fetch product");
     }
+    return res.json() as Promise<product>;
+  });
+
+  if (error) {
+    return {
+      name: "Error loading product",
+      price: 0,
+      createdAt: new Date().toISOString(),
+      closedAt: new Date().toISOString(),
+      contribution: [],
+      img_src: shirtTemplateUrl,
+      matrix: [[1]],
+    } as product;
   }
 
-  if (!product) {
-    return (
-      <div className="min-h-screen bg-amber-900 flex items-center justify-center">
-        <Card className="p-8">
-          <CardContent>
-            <h1 className="text-2xl font-bold text-center">Product not found</h1>
-            <Link href="/catalog">
-              <Button className="mt-4 w-full">Back to Catalog</Button>
-            </Link>
-          </CardContent>
-        </Card>
-      </div>
-    );
+  if (isLoading || !data) {
+    return {
+      name: "Loading...",
+      price: 0,
+      closedAt: new Date().toISOString(),
+      createdAt: new Date().toISOString(),
+      contribution: [],
+      img_src: shirtTemplateUrl,
+      matrix: [[1]],
+    } as product;
   }
+
+  return {
+    name: data.name,
+    price: data.price,
+    createdAt: data.createdAt,
+    closedAt: (data as any).closedAt,
+    contribution: data.contribution,
+    img_src: data.img_src || shirtTemplateUrl,
+    matrix: data.matrix || [[1]],
+  } as product;
+}
+export default function ItemPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = use(params);
+  const product = GetProduct(id);
+  const friendlyDate = format(new Date(product.createdAt), "MMMM do yyyy");
 
   return (
-    <div className="min-h-screen bg-amber-900 text-white">
-      {/* Header */}
-      <div className="bg-amber-800 p-4 flex items-center justify-between border-b border-amber-700">
-        <Link href="/catalog">
-          <Button variant="ghost" size="icon" className="text-white hover:bg-amber-700">
-            <ArrowLeft className="h-6 w-6" />
-          </Button>
-        </Link>
-        <h1 className="text-xl font-bold">Product Details</h1>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="text-white hover:bg-amber-700"
-          onClick={() => setIsFavorited(!isFavorited)}
-        >
-          <Heart className={`h-6 w-6 ${isFavorited ? 'fill-red-500 text-red-500' : ''}`} />
-        </Button>
+    <>
+      <div className="sticky top-0 z-10">
+        <Countdown targetDate={(new Date((product as any).closedAt)).toISOString()} />
       </div>
-
-      <div className="flex flex-col lg:flex-row">
-        {/* Main Content */}
-        <div className="flex-1 p-6">
-          {/* Matrix Display */}
-          <Card className="bg-amber-700 border-amber-600 shadow-xl">
-            <CardContent className="p-8">
-              <div className="text-center mb-4">
-                <h3 className="text-lg font-semibold text-white">
-                  Product Design View
-                </h3>
-                <p className="text-amber-200 text-sm">Click on patterns to view details</p>
-              </div>
-              <CanvasMatrixDisplay
-                grid={product.grid}
-                gridWidth={product.gridWidth}
-                onCellClick={handleCellClick}
-              />
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Sidebar - Pattern Details */}
-        <div className="w-full bg-amber-800 border-l border-amber-700">
-          <div className="p-6">
-            <h3 className="text-xl text-center font-bold text-white mb-4">
-              Batik #{product.id}
-            </h3>
-
-
-
-            {selectedCell ? (
-              <Card className="bg-amber-700 border-amber-600">
-                <CardContent className="p-4">
-                  <div className="mb-4">
-                    <img
-                      src={`/patterns/${allPatterns[selectedCell.patternId]}`}
-                      alt={patternNames[selectedCell.patternId]}
-                      className="w-full h-48 object-cover rounded-lg"
-                    />
-                  </div>
-
-                  <CardTitle className="text-lg font-bold text-white mb-2">
-                    {patternNames[selectedCell.patternId]}
-                  </CardTitle>
-
-                  <CardDescription className="text-amber-200 text-sm text-justify mb-4 leading-relaxed">
-                    {patternDescs[selectedCell.patternId]}
-                  </CardDescription>
-
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-amber-300">Position:</span>
-                      <span className="text-white">({selectedCell.x}, {selectedCell.y})</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-amber-300">Pattern ID:</span>
-                      <span className="text-white">{selectedCell.patternId}</span>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-amber-300">Color:</span>
-                      <div
-                        className="w-6 h-6 rounded border-2 border-amber-400"
-                        style={{ backgroundColor: `#${allColors[selectedCell.colorId]}` }}
-                      />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ) : (
-              <Card className="bg-amber-700 border-amber-600">
-                <CardContent className="p-6 text-center">
-                  <div className="text-amber-200 mb-2">
-                    👆 Click on any pattern in the shirt design
-                  </div>
-                  <p className="text-amber-300 text-sm">
-                    Select a pattern to view detailed information about its origin and meaning.
-                  </p>
-                </CardContent>
-              </Card>
-            )}
-
-            <div className="mt-6 flex gap-4">
+      <div className="text-accent-foreground flex flex-row justify-center items-center h-screen">
+        <div className="flex flex-row h-2/3 items-center gap-10">
+          <div className="h-fit relative flex items-center w-fit">
+            <Image
+              width={600}
+              height={600}
+              alt=""
+              src={product.img_src}
+              className=""
+            ></Image>
+            <div className="h-4/5 bg-secondary w-full -z-10 absolute rounded-[10px]"></div>
+          </div>
+          <div className="bg-secondary h-fit flex flex-col items-center rounded-[10px] p-8">
+            <div className="stoke-regular text-[48px] mt-3">{product.name}</div>
+            <div className=" opacity-70 text-[28px] mb-5">
+              Created on {friendlyDate}
+            </div>
+            <div className="opacity-30 text-[20px] underline cursor-pointer">
+              {product.contribution.length ?? 0} people contributed to this apparel
+            </div>
+            <div className="flex flex-col gap-5 mt-5">
               <Button
-                size="lg"
-                className="flex-1 bg-green-600 hover:bg-green-700 text-white"
+                variant={"outline"}
+                className="text-[28px] w-[385px] p-10 rounded-[8px]"
               >
-                <ShoppingCart className="mr-2 h-5 w-5" />
-                Add to Cart
+                View Background
+              </Button>
+              <Button className="text-[28px] w-full p-10 rounded-[8px]">
+                Purchase {product.price}{" "}
               </Button>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

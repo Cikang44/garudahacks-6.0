@@ -15,7 +15,9 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
         where: and(eq(shopItemsTable.id, productId), eq(shopItemsTable.isPurchasable, true)),
         with: {
             apparel: {
-                columns: {},
+                columns: {
+                    closedAt: true,
+                },
                 with: {
                     userApparel: {
                         columns: {},
@@ -39,6 +41,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     }
 
     product.contribution = product.apparel.userApparel.map((u: any) => u.user.name);
+    product.closedAt = product.apparel.closedAt;
     delete(product.apparel);
 
     return new Response(JSON.stringify(product), {
