@@ -1,20 +1,15 @@
-import { drizzle } from 'drizzle-orm/neon-http';
 import { boolean, integer, jsonb, pgTable, primaryKey, text, timestamp, uuid, varchar } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
-import { assert } from 'console';
-
-assert(process.env.DATABASE_URL, 'DATABASE_URL must be set in the environment variables');
-const db = drizzle(process.env.DATABASE_URL ?? "");
 
 // Tables
 
 export const usersTable = pgTable('users', {
     id: uuid('id').primaryKey(),
+    clerkId: varchar('clerk_id', { length: 255 }).notNull().unique(),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
-    email: varchar('email', { length: 255 }).notNull().unique(),
     name: varchar('name', { length: 255 }).notNull(),
-    daerahId: integer('daerah_id').notNull(),
+    daerahId: uuid('daerah_id').notNull(),
     placementQuota: integer('placement_quota').notNull().default(3),
 });
 

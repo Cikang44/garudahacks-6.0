@@ -1,5 +1,5 @@
 {
-  "id": "6ea8d8ae-d7d2-4b1b-83ae-678316f2d656",
+  "id": "0a3cd22c-985f-40a4-9ca8-5ecbbf5a0782",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -307,6 +307,12 @@
           "primaryKey": true,
           "notNull": true
         },
+        "clerk_id": {
+          "name": "clerk_id",
+          "type": "varchar(255)",
+          "primaryKey": false,
+          "notNull": true
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp",
@@ -321,12 +327,6 @@
           "notNull": true,
           "default": "now()"
         },
-        "email": {
-          "name": "email",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": true
-        },
         "name": {
           "name": "name",
           "type": "varchar(255)",
@@ -335,7 +335,7 @@
         },
         "daerah_id": {
           "name": "daerah_id",
-          "type": "integer",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         },
@@ -351,11 +351,11 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "users_email_unique": {
-          "name": "users_email_unique",
+        "users_clerk_id_unique": {
+          "name": "users_clerk_id_unique",
           "nullsNotDistinct": false,
           "columns": [
-            "email"
+            "clerk_id"
           ]
         }
       },
