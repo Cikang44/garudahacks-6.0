@@ -5,8 +5,8 @@ import { eq } from 'drizzle-orm';
 
 export async function POST(request: Request) {
   try {
-    
-    const {data,id} = await request.json();;
+
+    const {data,id} = await request.json();
 
     if (!data || !Array.isArray(data)) {
       return NextResponse.json({ message: 'Invalid grid data.' }, { status: 400 });
@@ -17,7 +17,7 @@ export async function POST(request: Request) {
       .set({
         data,
       })
-      .where(eq(apparelTable.id, id)).execute()
+      .where(eq(apparelTable.id, id)).execute();
       
 
     return NextResponse.json({ message: 'Grid saved successfully!'}, { status: 201 });
