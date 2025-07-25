@@ -94,7 +94,7 @@ const ApparelCard: React.FC<ApparelCardProps> = ({ item, index, current }) => {
     <Card
       className={`w-full has-hover: h-full relative border-none text-primary  overflow-hidden bg-transparent shadow-none flex flex-col items-center`}
     >
-      <div className="absolute peer gap-4 flex flex-col items-center justify-center w-fit h-4/5 z-20 text-[28px] text-center">
+      <div className="absolute peer gap-4 hover:*:visible *:invisible flex flex-col items-center justify-center w-fit h-4/5 z-20 text-[28px] text-center">
         <p>
           You can contribute a portion to <br /> this apparel before the catalog
           resets
