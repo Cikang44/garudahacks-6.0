@@ -94,7 +94,7 @@ const ApparelCard: React.FC<ApparelCardProps> = ({ item, index, current }) => {
     <Card
       className={`w-full has-hover: h-full relative border-none text-primary  overflow-hidden bg-transparent shadow-none flex flex-col items-center`}
     >
-      <div className="absolute invisible group gap-4 flex flex-col items-center justify-center w-fit h-4/5 z-20 pointer-events-none text-[28px] text-center">
+      <div className="absolute peer gap-4 flex flex-col items-center justify-center w-fit h-4/5 z-20 text-[28px] text-center">
         <p>
           You can contribute a portion to <br /> this apparel before the catalog
           resets
@@ -102,12 +102,12 @@ const ApparelCard: React.FC<ApparelCardProps> = ({ item, index, current }) => {
         <Button
           onClick={() => handleButtonClick(item.buttonState)}
           size={"lg"}
-          className="w-full text-[28px] group-hover:opacity-100 opacity-0 h-1/8 transition-all pointer-events-auto"
+          className="w-full text-[28px] h-1/8 transition-all pointer-events-auto"
         >
-          Contribute
+          {item.buttonState}
         </Button>
       </div>
-      <div className="relative flex group-hover:opacity-50 transition-opacity justify-center items-center h-[600px]">
+      <div className="relative flex peer-hover:opacity-40 opacity-100 transition-opacity justify-center items-center h-[600px]">
         <div className="bg-secondary absolute w-full h-4/5 -z-10 rounded-[10px]"></div>
         <Image
           src={item.imageUrl}
