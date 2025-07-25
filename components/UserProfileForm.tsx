@@ -6,13 +6,15 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { MapPin, Mail, Phone } from "lucide-react"
 import { currentUser } from "@clerk/nextjs/server"
 import { RegionDropdown } from "@/components/RegionDropdown"
-import { usersTable } from "@/lib/db/schema"
 import { useCallback, useState } from "react"
+import { Button } from "./ui/button"
+import { UserProfile } from "@clerk/nextjs"
 
 export default function UserProfileForm({ clerkId, imageUrl, fullName, firstName, lastName, email, appUser }: { clerkId: string; imageUrl: string; fullName: string; firstName: string; lastName: string; email: string; appUser: any }) {
 
     const [isLoading, setIsLoading] = useState(false);
     const [appUserRegionId, setAppUserRegionId] = useState(appUser?.daerahId || null);
+    const [showProfile, setShowProfile] = useState(false);
 
     const onDropdownChange = useCallback(async (regionId: string) => {
         setIsLoading(true);
@@ -58,6 +60,19 @@ export default function UserProfileForm({ clerkId, imageUrl, fullName, firstName
                 <div className="flex items-center gap-2">
                     <Mail className="w-4 h-4 text-muted-foreground" />
                     <span>{email}</span>
+                </div>
+                <div>
+                    <Button onClick={() => setShowProfile(true)}>Open Clerk Profile</Button>
+                    {showProfile && (
+                        <div
+                            className="fixed inset-0 bg-opacity-10 flex items-center justify-center z-50"
+                            onClick={() => setShowProfile(false)}
+                        >
+                            <div onClick={(e) => e.stopPropagation()}>
+                                <UserProfile />
+                            </div>
+                        </div>
+                    )}
                 </div>
             </CardContent>
         </Card>
