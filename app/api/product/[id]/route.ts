@@ -3,7 +3,8 @@ import { shopItemsTable } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { NextRequest } from "next/server";
 
-export async function GET(req: NextRequest, { params: { id: productId } }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+    const { id: productId } = await params;
     if (!productId) {
         return new Response(JSON.stringify({ error: "Product ID is required" }), {
             status: 400,

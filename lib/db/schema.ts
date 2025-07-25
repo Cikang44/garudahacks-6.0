@@ -27,7 +27,7 @@ export const patternsTable = pgTable('patterns', {
     name: varchar('name', { length: 255 }).notNull(),
     description: text('description').notNull(),
     daerahId: uuid('daerah_id').notNull(),
-    objectKey: varchar('object_key', { length: 255 }).notNull(),
+    imageUrl: varchar('image_url', { length: 511 }).notNull(),
 });
 
 export const apparelTable = pgTable('apparel', {
@@ -54,7 +54,7 @@ export const shopItemsTable = pgTable('shop_items', {
     name: varchar('name', { length: 255 }).notNull(),
     description: text('description').notNull(),
     price: integer('price').notNull(),
-    objectKey: varchar('object_key', { length: 255 }).notNull(),
+    imageUrl: varchar('image_url', { length: 511 }).notNull(),
     stock: integer('stock').notNull().default(0),
 });
 
