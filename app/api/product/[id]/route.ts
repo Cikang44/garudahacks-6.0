@@ -3,17 +3,32 @@ import { shopItemsTable } from "@/lib/db/schema";
 import { eq } from "drizzle-orm";
 import { NextRequest } from "next/server";
 
-export async function GET(req: NextRequest) {
-    const { searchParams } = new URL(req.url);
-    const productId = searchParams.get("id");
+export async function GET(req: NextRequest, { params: { id: productId } }: { params: { id: string } }) {
     if (!productId) {
         return new Response(JSON.stringify({ error: "Product ID is required" }), {
             status: 400,
         });
     };
 
-    const product = await db.query.shopItemsTable.findFirst({
+    const product: any = await db.query.shopItemsTable.findFirst({
         where: eq(shopItemsTable.id, productId),
+        with: {
+            apparel: {
+                columns: {},
+                with: {
+                    userApparel: {
+                        columns: {},
+                        with: {
+                            user: {
+                                columns: {
+                                    name: true,
+                                }
+                            },
+                        },
+                    }
+                }
+            }
+        }
     });
 
     if (!product) {
@@ -21,6 +36,9 @@ export async function GET(req: NextRequest) {
             status: 404,
         });
     }
+
+    product.contribution = product.apparel.userApparel.map((u: any) => u.user.name);
+    delete(product.apparel);
 
     return new Response(JSON.stringify(product), {
         status: 200,

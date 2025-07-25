@@ -3,28 +3,68 @@ import { use } from "react";
 import Image from "next/image";
 import { format } from "date-fns";
 import { Button } from "@/components/ui/button";
+import useSWR from "swr";
 
 const shirtTemplateUrl = "/template/shirt.png";
 
 type product = {
   name: string;
   price: number;
-  date_creation: string; // ISO
+  createdAt: string; // ISO
   contribution: string[];
   img_src: string;
   matrix: number[][]; //placeholder
 };
 function GetProduct(id: string) {
-  const matrix: number[][] = [[1]];
-  const thisBatik: product = {
-    contribution: [],
-    img_src: `${shirtTemplateUrl}`,
-    date_creation: "2025-07-24T19:28:55+00:00",
-    matrix: matrix,
-    name: "Batik #67",
-    price: 259000,
-  };
-  return thisBatik;
+  // const matrix: number[][] = [[1]];
+  // const thisBatik: product = {
+  //   contribution: [],
+  //   img_src: `${shirtTemplateUrl}`,
+  //   createdAt: "2025-07-24T19:28:55+00:00",
+  //   matrix: matrix,
+  //   name: "Batik #67",
+  //   price: 259000,
+  // };
+  // return thisBatik;
+
+  const { data, isLoading, error } = useSWR(`/api/product/${id}`, async (url: string) => {
+    const res = await fetch(url);
+    if (!res.ok) {
+      throw new Error("Failed to fetch product");
+    }
+    return res.json() as Promise<product>;
+  });
+
+  if (error) {
+    return {
+      name: "Error loading product",
+      price: 0,
+      createdAt: new Date().toISOString(),
+      contribution: [],
+      img_src: shirtTemplateUrl,
+      matrix: [[1]],
+    } as product;
+  }
+
+  if (isLoading || !data) {
+    return {
+      name: "Loading...",
+      price: 0,
+      createdAt: new Date().toISOString(),
+      contribution: [],
+      img_src: shirtTemplateUrl,
+      matrix: [[1]],
+    } as product;
+  }
+
+  return {
+    name: data.name,
+    price: data.price,
+    createdAt: data.createdAt,
+    contribution: data.contribution,
+    img_src: data.img_src || shirtTemplateUrl,
+    matrix: data.matrix || [[1]],
+  } as product;
 }
 export default function ItemPage({
   params,
@@ -33,7 +73,8 @@ export default function ItemPage({
 }) {
   const { id } = use(params);
   const product = GetProduct(id);
-  const friendlyDate = format(new Date(product.date_creation), "MMMM do yyyy");
+  console.log("Product data:", product);
+  const friendlyDate = format(new Date(product.createdAt), "MMMM do yyyy");
   return (
     <div className="text-accent-foreground flex flex-row justify-center items-center h-screen">
       <div className="flex flex-row h-2/3 items-center gap-10">
@@ -53,7 +94,7 @@ export default function ItemPage({
             Created on {friendlyDate}
           </div>
           <div className="opacity-30 text-[20px] underline cursor-pointer">
-            {product.contribution.length} people contributed to this apparel
+            {product.contribution.length ?? 0} people contributed to this apparel
           </div>
           <div className="flex flex-col gap-5 mt-5">
             <Button

@@ -27,6 +27,7 @@ export const patternsTable = pgTable('patterns', {
     name: varchar('name', { length: 255 }).notNull(),
     description: text('description').notNull(),
     daerahId: uuid('daerah_id').notNull(),
+    objectKey: varchar('object_key', { length: 255 }).notNull(),
 });
 
 export const apparelTable = pgTable('apparel', {
@@ -48,6 +49,7 @@ export const shopItemsTable = pgTable('shop_items', {
     id: uuid('id').primaryKey().defaultRandom(),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
+    apparelId: uuid('apparel_id').notNull(),
     isPurchasable: boolean('is_purchasable').notNull().default(true),
     name: varchar('name', { length: 255 }).notNull(),
     description: text('description').notNull(),
@@ -86,6 +88,11 @@ export const userApparelRelations = relations(userApparelTable, ({ one }) => ({
     }),
 }));
 
+export const apparelRelations = relations(apparelTable, ({ many }) => ({
+    shopItems: many(shopItemsTable),
+    userApparel: many(userApparelTable),
+}));
+
 export const daerahRelations = relations(daerahTable, ({ one, many }) => ({
     users: one(usersTable, {
         fields: [daerahTable.id],
@@ -101,8 +108,12 @@ export const patternsRelations = relations(patternsTable, ({ one }) => ({
     }),
 }));
 
-export const shopItemsRelations = relations(shopItemsTable, ({ many }) => ({
+export const shopItemsRelations = relations(shopItemsTable, ({ one, many }) => ({
     transactions: many(transactionsTable),
+    apparel: one(apparelTable, {
+        fields: [shopItemsTable.apparelId],
+        references: [apparelTable.id],
+    }),
 }));
 
 export const transactionsRelations = relations(transactionsTable, ({ one }) => ({
