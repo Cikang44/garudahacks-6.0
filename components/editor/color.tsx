@@ -1,5 +1,6 @@
 "use client";
 import { allColors } from "@/app/editor/page";
+import { Button } from "@/components/ui/button";
 export type colorId = number;
 const size = "80px";
 
@@ -11,16 +12,18 @@ export default function ColorElement({
   onColorSelect: (colorId: colorId) => void;
 }) {
   return (
-    <button
+    <Button
       onClick={() => {
         onColorSelect(previewColor);
       }}
-      className={` cursor-pointer rounded-lg`}
+      variant="outline"
+      size="icon"
+      className="rounded-lg border-2 border-amber-600 hover:border-amber-400 transition-all duration-200 hover:scale-105"
       style={{
         backgroundColor: `#${allColors[previewColor]}`,
         width: size,
         height: size,
       }}
-    ></button>
+    />
   );
 }
