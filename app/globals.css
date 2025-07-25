@@ -1,7 +1,31 @@
+@import url("https://fonts.googleapis.com/css2?family=Poly:ital@0;1&family=Stoke:wght@300;400&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
+
+.stoke-light {
+  font-family: "Stoke", serif;
+  font-weight: 300;
+  font-style: normal;
+}
+
+.stoke-regular {
+  font-family: "Stoke", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+.poly-regular {
+  font-family: "Poly", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.poly-regular-italic {
+  font-family: "Poly", serif;
+  font-weight: 400;
+  font-style: italic;
+}
 
 @theme inline {
   --color-background: var(--background);
@@ -43,7 +67,7 @@
   --radius-xl: calc(var(--radius) + 4px);
 }
 
-:root {
+/* :root {
   --radius: 0.625rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
@@ -76,19 +100,19 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
-}
+} */
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
+  --background: #3b2624;
+  --foreground: oklch(0.985 0);
   --card: oklch(0.205 0 0);
   --card-foreground: oklch(0.985 0 0);
   --popover: oklch(0.205 0 0);
   --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
+  --primary: #f7e9df;
+  --primary-foreground: #1e1e1e;
+  --secondary: #2a1614;
+  --secondary-foreground: #f7e9df;
   --muted: oklch(0.269 0 0);
   --muted-foreground: oklch(0.708 0 0);
   --accent: oklch(0.269 0 0);
