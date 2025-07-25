@@ -1,5 +1,6 @@
 CREATE TABLE "apparel" (
-	"id" uuid PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
+	"name" varchar(255) NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
 	"closed_at" timestamp DEFAULT now() NOT NULL,
@@ -7,35 +8,38 @@ CREATE TABLE "apparel" (
 );
 --> statement-breakpoint
 CREATE TABLE "daerah" (
-	"id" uuid PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
-	"name" varchar(255) NOT NULL
+	"name" varchar(255) NOT NULL,
+	CONSTRAINT "daerah_name_unique" UNIQUE("name")
 );
 --> statement-breakpoint
 CREATE TABLE "patterns" (
-	"id" uuid PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
 	"name" varchar(255) NOT NULL,
 	"description" text NOT NULL,
-	"daerah_id" uuid NOT NULL
+	"daerah_id" uuid NOT NULL,
+	"image_url" varchar(511) NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "shop_items" (
-	"id" uuid PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
+	"apparel_id" uuid NOT NULL,
 	"is_purchasable" boolean DEFAULT true NOT NULL,
 	"name" varchar(255) NOT NULL,
 	"description" text NOT NULL,
 	"price" integer NOT NULL,
-	"object_key" varchar(255) NOT NULL,
+	"image_url" varchar(511) NOT NULL,
 	"stock" integer DEFAULT 0 NOT NULL
 );
 --> statement-breakpoint
 CREATE TABLE "transactions" (
-	"id" uuid PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
 	"item_id" uuid NOT NULL,
@@ -50,7 +54,7 @@ CREATE TABLE "user_apparel" (
 );
 --> statement-breakpoint
 CREATE TABLE "users" (
-	"id" uuid PRIMARY KEY NOT NULL,
+	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
 	"clerk_id" varchar(255) NOT NULL,
 	"created_at" timestamp DEFAULT now() NOT NULL,
 	"updated_at" timestamp DEFAULT now() NOT NULL,
