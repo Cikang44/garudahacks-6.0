@@ -239,7 +239,7 @@ export default function Editor({
             {/* Current Selection Display */}
             <div className="bg-amber-700 p-4 rounded-lg mb-4">
               <h3 className="text-lg font-semibold mb-2 text-yellow-300">Current Selection</h3>
-              <div className="flex items-center justify-between text-sm">
+              <div className="flex flex-col gap-2 items-center justify-between text-sm">
                 <div className="flex items-center gap-2">
                   <span className="text-amber-200">Pattern:</span>
                   <span className="bg-amber-600 px-2 py-1 rounded text-white font-medium">
