@@ -17,3 +17,5 @@ await db.insert(schema.daerahTable).values(
 ).onConflictDoNothing({
     target: schema.daerahTable.name,
 });
+
+// await db.execute(`CREATE EXTENSION IF NOT EXISTS pg_cron;`);

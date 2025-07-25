@@ -1,10 +1,8 @@
 "use client"
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { MapPin, Mail, Phone } from "lucide-react"
-import { currentUser } from "@clerk/nextjs/server"
 import { RegionDropdown } from "@/components/RegionDropdown"
 import { useCallback, useState } from "react"
 import { Button } from "./ui/button"
@@ -64,13 +62,13 @@ export default function UserProfileForm({ clerkId, imageUrl, fullName, firstName
                 <div>
                     <Button onClick={() => setShowProfile(true)}>Open Clerk Profile</Button>
                     {showProfile && (
-                        <div
+                        <div 
                             className="fixed inset-0 bg-opacity-10 flex items-center justify-center z-50"
                             onClick={() => setShowProfile(false)}
                         >
                             <div onClick={(e) => e.stopPropagation()}>
                                 <UserProfile />
-                            </div>
+                            </div>˝
                         </div>
                     )}
                 </div>

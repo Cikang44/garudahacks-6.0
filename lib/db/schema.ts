@@ -4,7 +4,7 @@ import { relations } from "drizzle-orm";
 // Tables
 
 export const usersTable = pgTable('users', {
-    id: uuid('id').primaryKey(),
+    id: uuid('id').primaryKey().defaultRandom(),
     clerkId: varchar('clerk_id', { length: 255 }).notNull().unique(),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
@@ -14,14 +14,14 @@ export const usersTable = pgTable('users', {
 });
 
 export const daerahTable = pgTable('daerah', {
-    id: uuid('id').primaryKey(),
+    id: uuid('id').primaryKey().defaultRandom(),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
     name: varchar('name', { length: 255 }).notNull().unique(),
 });
 
 export const patternsTable = pgTable('patterns', {
-    id: uuid('id').primaryKey(),
+    id: uuid('id').primaryKey().defaultRandom(),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
     name: varchar('name', { length: 255 }).notNull(),
@@ -30,7 +30,7 @@ export const patternsTable = pgTable('patterns', {
 });
 
 export const apparelTable = pgTable('apparel', {
-    id: uuid('id').primaryKey(),
+    id: uuid('id').primaryKey().defaultRandom(),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
     closedAt: timestamp('closed_at').notNull().defaultNow(),
@@ -45,7 +45,7 @@ export const userApparelTable = pgTable('user_apparel', {
 ]);
 
 export const shopItemsTable = pgTable('shop_items', {
-    id: uuid('id').primaryKey(),
+    id: uuid('id').primaryKey().defaultRandom(),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
     isPurchasable: boolean('is_purchasable').notNull().default(true),
@@ -57,7 +57,7 @@ export const shopItemsTable = pgTable('shop_items', {
 });
 
 export const transactionsTable = pgTable('transactions', {
-    id: uuid('id').primaryKey(),
+    id: uuid('id').primaryKey().defaultRandom(),
     createdAt: timestamp('created_at').notNull().defaultNow(),
     updatedAt: timestamp('updated_at').notNull().defaultNow(),
     itemId: uuid('item_id').notNull(),
